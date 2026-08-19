@@ -13,14 +13,32 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
+// Health Check Endpoint for Render Keep-Alive
+app.get('/health', (req, res) => {
+  res.status(200).send('OK - Server Active');
+});
+
 // Serve static frontend files if built
 const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/socket.io')) return next();
+    if (req.path.startsWith('/socket.io') || req.path.startsWith('/health')) return next();
     res.sendFile(path.join(distPath, 'index.html'));
   });
+}
+
+// Keep-Alive Self-Ping for Render Free Tier (pings every 40 seconds)
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+if (RENDER_EXTERNAL_URL) {
+  const pingUrl = `${RENDER_EXTERNAL_URL.replace(/\/$/, '')}/health`;
+  console.log(`[Keep-Alive] Configured self-ping to ${pingUrl} every 40 seconds`);
+  setInterval(() => {
+    fetch(pingUrl)
+      .then((r) => r.text())
+      .then((txt) => console.log(`[Keep-Alive] Self-ping result: ${txt}`))
+      .catch((err) => console.warn(`[Keep-Alive] Self-ping warning:`, err.message));
+  }, 40 * 1000);
 }
 
 const httpServer = createServer(app);
