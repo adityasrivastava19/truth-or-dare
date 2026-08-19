@@ -196,3 +196,143 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+/* Responsive Mobile Layout Utilities */
+.room-container {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 100vh;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .room-container {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+}
+
+.room-header {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  min-height: 46px;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .room-header {
+    flex-wrap: wrap;
+    padding: 0.5rem;
+    min-height: auto;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .room-header-title {
+    font-size: 1rem !important;
+  }
+  .room-header-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+}
+
+.room-main-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .room-main-grid {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    height: auto;
+    flex: none;
+  }
+}
+
+.video-grid-wrapper {
+  flex: 1;
+  max-height: 250px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .video-grid-wrapper {
+    max-height: none;
+    height: auto;
+    flex: none;
+  }
+}
+
+.game-stage-wrapper {
+  flex: 1.4;
+  overflow-y: auto;
+  min-height: 350px;
+}
+
+@media (max-width: 768px) {
+  .game-stage-wrapper {
+    flex: none;
+    height: auto;
+    min-height: auto;
+  }
+}
+
+.sidebar-container {
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    height: 480px;
+    min-height: 420px;
+  }
+}
+
+/* Media Controls Mobile Bar */
+.media-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.25rem;
+  background: rgba(18, 22, 38, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  z-index: 50;
+  overflow-x: auto;
+}
+
+@media (max-width: 480px) {
+  .media-controls-bar {
+    gap: 0.3rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .media-control-btn {
+    width: 38px !important;
+    height: 38px !important;
+  }
+}
+

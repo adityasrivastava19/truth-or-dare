@@ -353,22 +353,12 @@ export const App: React.FC = () => {
         </>
       ) : room && localPlayer ? (
         /* Video Call & Truth or Dare Room Interface */
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '0.75rem', gap: '0.75rem', overflow: 'hidden' }}>
+        <div className="room-container">
           {/* Top Header Navigation Bar */}
-          <div
-            className="glass-panel"
-            style={{
-              padding: '0.5rem 1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderRadius: '0.75rem',
-              height: '46px',
-              flexShrink: 0
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="glass-panel room-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <div
+                className="room-header-title"
                 style={{
                   fontSize: '1.25rem',
                   fontFamily: 'Outfit, sans-serif',
@@ -396,7 +386,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div className="room-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               {room.players.length > 1 && (
                 <button
                   onClick={() => setShowRateModal(true)}
@@ -414,11 +404,11 @@ export const App: React.FC = () => {
           </div>
 
           {/* Main Split Grid */}
-          <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 340px', gap: '0.75rem', overflow: 'hidden' }}>
+          <div className="room-main-grid">
             {/* Left Area: Video Grid & Center Stage Game Board */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden' }}>
               {/* Top Section: Video Feeds Grid */}
-              <div style={{ flex: 1, maxHeight: '250px', overflow: 'hidden' }}>
+              <div className="video-grid-wrapper">
                 <VideoGrid
                   localPlayer={localPlayer}
                   localStream={localStream}
@@ -430,7 +420,7 @@ export const App: React.FC = () => {
               </div>
 
               {/* Bottom Section: Center Stage Game Controller */}
-              <div style={{ flex: 1.4, overflowY: 'auto' }}>
+              <div className="game-stage-wrapper">
                 <GameStage
                   room={room}
                   localPlayer={localPlayer}
@@ -444,7 +434,7 @@ export const App: React.FC = () => {
             </div>
 
             {/* Right Area: Sidebar Leaderboard & Chat */}
-            <div style={{ height: '100%', overflow: 'hidden' }}>
+            <div className="sidebar-container">
               <Sidebar
                 players={room.players}
                 messages={messages}

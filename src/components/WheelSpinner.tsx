@@ -151,8 +151,8 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
   }, [players, isSpinning, targetPlayerId]);
 
   return (
-    <div style={{ textAlign: 'center', position: 'relative', width: '280px', height: '280px', margin: '0 auto' }}>
-      <canvas ref={canvasRef} width={280} height={280} style={{ borderRadius: '50%' }} />
+    <div style={{ textAlign: 'center', position: 'relative', width: '100%', maxWidth: '280px', aspectRatio: '1/1', margin: '0 auto' }}>
+      <canvas ref={canvasRef} width={280} height={280} style={{ borderRadius: '50%', width: '100%', height: '100%' }} />
     </div>
   );
 };

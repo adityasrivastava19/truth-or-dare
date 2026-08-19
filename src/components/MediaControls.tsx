@@ -39,23 +39,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.6rem',
-        padding: '0.5rem 1.25rem',
-        background: 'rgba(18, 22, 38, 0.95)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: '2rem',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)',
-        width: 'fit-content',
-        margin: '0 auto',
-        zIndex: 50
-      }}
-    >
+    <div className="media-controls-bar">
       {/* Mic Control */}
       <button
         onClick={onToggleMic}
