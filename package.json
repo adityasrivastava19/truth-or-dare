@@ -8,6 +8,7 @@
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc && vite build",
+    "start": "tsx server/index.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
