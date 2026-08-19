@@ -334,9 +334,130 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     gap: 0.3rem;
     padding: 0.4rem 0.6rem;
   }
-  .media-control-btn {
-    width: 38px !important;
-    height: 38px !important;
+}
+/* Mobile Full Screen Video Call App UI */
+@media (max-width: 768px) {
+  .room-container.mobile-full-screen-ui {
+    position: relative;
+    height: 100dvh;
+    width: 100vw;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    background: #000;
+  }
+
+  .room-header.mobile-header-float {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    z-index: 40;
+    background: rgba(18, 22, 38, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 1rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .room-main-grid.mobile-full-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  .video-grid-wrapper.mobile-video-full {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    min-height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .game-stage-wrapper.mobile-stage-float {
+    position: absolute;
+    bottom: 5.2rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    max-height: 45vh;
+    overflow-y: auto;
+    z-index: 30;
+    background: rgba(18, 22, 38, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 1.25rem;
+    padding: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  }
+
+  .media-controls-bar.mobile-controls-float {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    background: rgba(18, 22, 38, 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+  }
+
+  .mobile-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    z-index: 90;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .mobile-drawer-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72vh;
+    background: rgba(18, 22, 38, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 

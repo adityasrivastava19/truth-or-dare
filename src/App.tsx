@@ -10,7 +10,7 @@ import { RateOpponentModal } from './components/RateOpponentModal';
 import { socket, connectSocket } from './services/socket';
 import { rtcManager } from './services/webrtc';
 import { Player, RoomState, ChatMessage, FloatingReaction, GenderType, TurnMode, GameCategory } from './types/game';
-import { Copy, Check, Sparkles, Share2, Shield, Settings, Volume2 } from 'lucide-react';
+import { Copy, Check, Sparkles, Share2, Shield, Settings, Volume2, MessageSquare, X } from 'lucide-react';
 import { sounds } from './utils/sound';
 
 export const App: React.FC = () => {
@@ -34,6 +34,9 @@ export const App: React.FC = () => {
   // Mode Consent & Rating Modals
   const [consentModalData, setConsentModalData] = useState<{ requesterName: string; proposedMode: 'erotic' } | null>(null);
   const [showRateModal, setShowRateModal] = useState<boolean>(false);
+
+  // Mobile Drawer State
+  const [showMobileDrawer, setShowMobileDrawer] = useState<boolean>(false);
 
   // Copy link feedback
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -353,14 +356,14 @@ export const App: React.FC = () => {
         </>
       ) : room && localPlayer ? (
         /* Video Call & Truth or Dare Room Interface */
-        <div className="room-container">
+        <div className="room-container mobile-full-screen-ui">
           {/* Top Header Navigation Bar */}
-          <div className="glass-panel room-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="glass-panel room-header mobile-header-float">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <div
                 className="room-header-title"
                 style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.1rem',
                   fontFamily: 'Outfit, sans-serif',
                   fontWeight: 900,
                   background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
@@ -373,9 +376,9 @@ export const App: React.FC = () => {
               <div
                 style={{
                   background: 'rgba(255,255,255,0.08)',
-                  padding: '0.2rem 0.5rem',
+                  padding: '0.15rem 0.4rem',
                   borderRadius: '0.4rem',
-                  fontSize: '0.8rem',
+                  fontSize: '0.75rem',
                   fontWeight: 700,
                   color: '#fff',
                   letterSpacing: '1px',
@@ -386,29 +389,39 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="room-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div className="room-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              {/* Mobile Chat Drawer Toggle */}
+              <button
+                onClick={() => setShowMobileDrawer((prev) => !prev)}
+                className="glass-button"
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.78rem', background: 'rgba(6, 182, 212, 0.25)', borderColor: '#06b6d4' }}
+              >
+                <MessageSquare size={14} color="#06b6d4" />
+                <span>Chat</span>
+              </button>
+
               {room.players.length > 1 && (
                 <button
                   onClick={() => setShowRateModal(true)}
                   className="glass-button btn-gold-gradient"
-                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                 >
-                  ⭐ Rate Opponent
+                  ⭐ Rate
                 </button>
               )}
-              <button onClick={handleCopyLink} className="glass-button" style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}>
-                {copiedLink ? <Check size={15} color="#10b981" /> : <Share2 size={15} />}
-                {copiedLink ? 'Link Copied!' : 'Invite Friends'}
+              <button onClick={handleCopyLink} className="glass-button" style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}>
+                {copiedLink ? <Check size={14} color="#10b981" /> : <Share2 size={14} />}
+                {copiedLink ? 'Copied' : 'Invite'}
               </button>
             </div>
           </div>
 
           {/* Main Split Grid */}
-          <div className="room-main-grid">
+          <div className="room-main-grid mobile-full-grid">
             {/* Left Area: Video Grid & Center Stage Game Board */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden' }}>
-              {/* Top Section: Video Feeds Grid */}
-              <div className="video-grid-wrapper">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden', height: '100%' }}>
+              {/* Top Section: Full Screen Video Feeds Grid */}
+              <div className="video-grid-wrapper mobile-video-full">
                 <VideoGrid
                   localPlayer={localPlayer}
                   localStream={localStream}
@@ -419,8 +432,8 @@ export const App: React.FC = () => {
                 />
               </div>
 
-              {/* Bottom Section: Center Stage Game Controller */}
-              <div className="game-stage-wrapper">
+              {/* Center Stage Floating Game Controller */}
+              <div className="game-stage-wrapper mobile-stage-float">
                 <GameStage
                   room={room}
                   localPlayer={localPlayer}
@@ -433,7 +446,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Area: Sidebar Leaderboard & Chat */}
+            {/* Right Area: Desktop Sidebar Leaderboard & Chat */}
             <div className="sidebar-container">
               <Sidebar
                 players={room.players}
@@ -445,8 +458,8 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Media Footer Bar */}
-          <div style={{ flexShrink: 0 }}>
+          {/* Bottom Floating Media Footer Bar */}
+          <div className="media-controls-bar mobile-controls-float">
             <MediaControls
               isMuted={localPlayer.isMuted}
               isVideoOff={localPlayer.isVideoOff}
@@ -460,6 +473,55 @@ export const App: React.FC = () => {
               onLeaveRoom={handleLeaveRoom}
             />
           </div>
+
+          {/* Mobile Slide-Up Chat & Leaderboard Drawer Overlay */}
+          {showMobileDrawer && (
+            <>
+              <div className="mobile-drawer-backdrop" onClick={() => setShowMobileDrawer(false)} />
+              <div className="mobile-drawer-panel">
+                <div
+                  style={{
+                    padding: '0.75rem 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid var(--border-glass)',
+                    background: 'rgba(0,0,0,0.3)'
+                  }}
+                >
+                  <span style={{ fontWeight: 800, fontFamily: 'Outfit, sans-serif', color: '#fff', fontSize: '1rem' }}>
+                    💬 Room Chat & Leaderboard
+                  </span>
+                  <button
+                    onClick={() => setShowMobileDrawer(false)}
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      border: 'none',
+                      color: '#fff',
+                      borderRadius: '50%',
+                      width: '30px',
+                      height: '30px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <Sidebar
+                    players={room.players}
+                    messages={messages}
+                    customPrompts={room.customPrompts}
+                    onSendMessage={handleSendMessage}
+                    onAddCustomPrompt={handleAddCustomPrompt}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Erotic Mode Consent Modal */}
           {consentModalData && (
