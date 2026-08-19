@@ -168,6 +168,15 @@ export class WebRTCManager {
     }
     if (!pc) return;
 
+    // Ensure local stream tracks are added to peer connection
+    if (this.localStream) {
+      this.localStream.getTracks().forEach((track) => {
+        if (!pc!.getSenders().some((s) => s.track === track)) {
+          pc!.addTrack(track, this.localStream!);
+        }
+      });
+    }
+
     try {
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
       await this.flushPendingCandidates(senderId);

@@ -243,8 +243,8 @@ function checkMatchmaking() {
       s2.emit('match-found', { roomCode, peerName: user1.name, player: player2, room: newRoom, requestedMode: user1.matchMode });
 
       // Signal WebRTC peer join to kick off video stream handshake!
+      // Emit peer-joined only to s1 (the room initiator) to prevent SDP offer collisions!
       s1.emit('peer-joined', { peerId: user2.socketId, player: player2 });
-      s2.emit('peer-joined', { peerId: user1.socketId, player: player1 });
 
       // If one user requested erotic mode, send consent prompt to opponent!
       if (user1.matchMode === 'erotic' && user2.matchMode !== 'erotic') {
