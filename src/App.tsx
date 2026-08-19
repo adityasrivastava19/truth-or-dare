@@ -10,10 +10,13 @@ import { RateOpponentModal } from './components/RateOpponentModal';
 import { socket, connectSocket } from './services/socket';
 import { rtcManager } from './services/webrtc';
 import { Player, RoomState, ChatMessage, FloatingReaction, GenderType, TurnMode, GameCategory } from './types/game';
-import { Copy, Check, Sparkles, Share2, Shield, Settings, Volume2, MessageSquare, X } from 'lucide-react';
+import { Copy, Check, Sparkles, Share2, Shield, Settings, Volume2, MessageSquare, X, Sun, Moon } from 'lucide-react';
 import { sounds } from './utils/sound';
+import { useTheme } from './context/ThemeContext';
 
 export const App: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
+
   // Navigation / View State
   const [inRoom, setInRoom] = useState<boolean>(false);
   const [room, setRoom] = useState<RoomState | null>(null);
@@ -390,6 +393,17 @@ export const App: React.FC = () => {
             </div>
 
             <div className="room-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className="glass-button"
+                style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {theme === 'dark' ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-indigo-600" />}
+                <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+              </button>
+
               {/* Mobile Chat Drawer Toggle */}
               <button
                 onClick={() => setShowMobileDrawer((prev) => !prev)}

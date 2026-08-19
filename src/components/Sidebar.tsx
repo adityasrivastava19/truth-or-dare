@@ -40,74 +40,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '450px' }}>
+    <div className="glass-panel flex flex-col h-full min-h-[450px] bg-white/80 dark:bg-slate-900/80 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden">
       {/* Navigation Tabs */}
-      <div
-        style={{
-          display: 'flex',
-          borderBottom: '1px solid var(--border-glass)',
-          background: 'rgba(0,0,0,0.2)'
-        }}
-      >
+      <div className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-950/40">
         <button
           onClick={() => setActiveTab('leaderboard')}
-          style={{
-            flex: 1,
-            padding: '0.75rem 0.5rem',
-            background: activeTab === 'leaderboard' ? 'rgba(236, 72, 153, 0.2)' : 'none',
-            border: 'none',
-            borderBottom: activeTab === 'leaderboard' ? '2px solid #ec4899' : '2px solid transparent',
-            color: activeTab === 'leaderboard' ? '#ec4899' : 'var(--text-muted)',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.3rem'
-          }}
+          className={`flex-1 py-3 px-2 flex items-center justify-center gap-1.5 text-xs font-bold transition-all border-b-2 ${
+            activeTab === 'leaderboard'
+              ? 'bg-pink-500/10 border-pink-500 text-pink-600 dark:text-pink-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          }`}
         >
           <Trophy size={16} /> Leaderboard
         </button>
 
         <button
           onClick={() => setActiveTab('chat')}
-          style={{
-            flex: 1,
-            padding: '0.75rem 0.5rem',
-            background: activeTab === 'chat' ? 'rgba(6, 182, 212, 0.2)' : 'none',
-            border: 'none',
-            borderBottom: activeTab === 'chat' ? '2px solid #06b6d4' : '2px solid transparent',
-            color: activeTab === 'chat' ? '#06b6d4' : 'var(--text-muted)',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.3rem'
-          }}
+          className={`flex-1 py-3 px-2 flex items-center justify-center gap-1.5 text-xs font-bold transition-all border-b-2 ${
+            activeTab === 'chat'
+              ? 'bg-cyan-500/10 border-cyan-500 text-cyan-600 dark:text-cyan-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          }`}
         >
           <MessageSquare size={16} /> Chat
         </button>
 
         <button
           onClick={() => setActiveTab('custom')}
-          style={{
-            flex: 1,
-            padding: '0.75rem 0.5rem',
-            background: activeTab === 'custom' ? 'rgba(245, 158, 11, 0.2)' : 'none',
-            border: 'none',
-            borderBottom: activeTab === 'custom' ? '2px solid #f59e0b' : '2px solid transparent',
-            color: activeTab === 'custom' ? '#f59e0b' : 'var(--text-muted)',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.3rem'
-          }}
+          className={`flex-1 py-3 px-2 flex items-center justify-center gap-1.5 text-xs font-bold transition-all border-b-2 ${
+            activeTab === 'custom'
+              ? 'bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          }`}
         >
           <PlusCircle size={16} /> Add Cards
         </button>
@@ -115,39 +79,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Tab 1: Leaderboard */}
       {activeTab === 'leaderboard' && (
-        <div style={{ padding: '1rem', flex: 1, overflowY: 'auto' }}>
-          <h4 className="font-heading" style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-            🏆 LIVE ROOM RANKINGS
+        <div className="p-4 flex-1 overflow-y-auto">
+          <h4 className="font-heading text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+            🏆 Live Room Rankings
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <div className="flex flex-col gap-2">
             {sortedPlayers.map((player, idx) => (
               <div
                 key={player.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: '0.6rem',
-                  background: idx === 0 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255,255,255,0.03)',
-                  border: idx === 0 ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border-glass)'
-                }}
+                className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
+                  idx === 0
+                    ? 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/40 text-slate-900 dark:text-slate-100 shadow-sm'
+                    : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
+                }`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: 800, color: idx === 0 ? '#f59e0b' : 'var(--text-muted)', width: '18px' }}>
+                <div className="flex items-center gap-2">
+                  <span className={`font-black text-xs w-5 ${idx === 0 ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500'}`}>
                     #{idx + 1}
                   </span>
-                  <span>{player.avatar}</span>
-                  <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>{player.name}</span>
+                  <span className="text-base">{player.avatar}</span>
+                  <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">{player.name}</span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="flex items-center gap-2">
                   {player.streak > 1 && (
-                    <span style={{ fontSize: '0.75rem', color: '#ec4899', fontWeight: 700 }}>
+                    <span className="text-[11px] text-pink-600 dark:text-pink-400 font-bold">
                       🔥 {player.streak}
                     </span>
                   )}
-                  <span style={{ fontWeight: 800, color: '#f59e0b', fontSize: '0.95rem' }}>
+                  <span className="font-black text-amber-500 text-xs">
                     {player.score} pts
                   </span>
                 </div>
@@ -159,54 +119,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Tab 2: Chat */}
       {activeTab === 'chat' && (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
-          <div style={{ padding: '0.75rem', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div className="flex flex-col h-full flex-1">
+          <div className="p-3 flex-1 overflow-y-auto flex flex-col gap-2">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                style={{
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '0.5rem',
-                  background: msg.isSystem ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.05)',
-                  border: msg.isSystem ? '1px solid rgba(139, 92, 246, 0.3)' : 'none',
-                  fontSize: '0.85rem'
-                }}
+                className={`p-2.5 rounded-xl text-xs transition-all ${
+                  msg.isSystem
+                    ? 'bg-purple-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300'
+                    : 'bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50'
+                }`}
               >
                 {!msg.isSystem && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                    <span style={{ fontWeight: 700, color: '#06b6d4' }}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-bold text-cyan-600 dark:text-cyan-400">
                       {msg.avatar} {msg.sender}
                     </span>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{msg.timestamp}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500">{msg.timestamp}</span>
                   </div>
                 )}
-                <div style={{ color: msg.isSystem ? '#c084fc' : '#e4e4e7', wordBreak: 'break-word' }}>
-                  {msg.text}
-                </div>
+                <div className="break-words font-medium">{msg.text}</div>
               </div>
             ))}
           </div>
 
-          <form onSubmit={handleSendChat} style={{ padding: '0.75rem', borderTop: '1px solid var(--border-glass)' }}>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <form onSubmit={handleSendChat} className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
+            <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Type a chat message..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: '0.6rem 0.8rem',
-                  borderRadius: '0.5rem',
-                  background: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-glass)',
-                  color: '#fff',
-                  fontSize: '0.875rem',
-                  outline: 'none'
-                }}
+                className="flex-1 px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
-              <button type="submit" className="glass-button btn-cyan-gradient" style={{ padding: '0.6rem 0.8rem' }}>
-                <Send size={16} />
+              <button type="submit" className="glass-button btn-cyan-gradient !p-2">
+                <Send size={14} />
               </button>
             </div>
           </form>
@@ -215,45 +162,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Tab 3: Custom Cards Deck */}
       {activeTab === 'custom' && (
-        <div style={{ padding: '1rem', flex: 1, overflowY: 'auto' }}>
-          <h4 className="font-heading" style={{ fontSize: '1rem', color: '#f59e0b', marginBottom: '0.5rem' }}>
+        <div className="p-4 flex-1 overflow-y-auto">
+          <h4 className="font-heading text-xs font-bold text-amber-500 mb-1 flex items-center gap-1">
             ➕ ADD CUSTOM CARDS
           </h4>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
             Submit custom truths or dares to be shuffled into this room's active deck!
           </p>
 
           <form onSubmit={handleAddPrompt}>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <div className="flex gap-2 mb-3">
               <button
                 type="button"
                 onClick={() => setPromptType('truth')}
-                style={{
-                  flex: 1,
-                  padding: '0.5rem',
-                  borderRadius: '0.5rem',
-                  background: promptType === 'truth' ? 'rgba(6, 182, 212, 0.3)' : 'rgba(255,255,255,0.05)',
-                  border: promptType === 'truth' ? '1px solid #06b6d4' : '1px solid transparent',
-                  color: '#fff',
-                  fontWeight: 600,
-                  fontSize: '0.85rem'
-                }}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  promptType === 'truth'
+                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-600 dark:text-cyan-400'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                }`}
               >
                 TRUTH
               </button>
               <button
                 type="button"
                 onClick={() => setPromptType('dare')}
-                style={{
-                  flex: 1,
-                  padding: '0.5rem',
-                  borderRadius: '0.5rem',
-                  background: promptType === 'dare' ? 'rgba(236, 72, 153, 0.3)' : 'rgba(255,255,255,0.05)',
-                  border: promptType === 'dare' ? '1px solid #ec4899' : '1px solid transparent',
-                  color: '#fff',
-                  fontWeight: 600,
-                  fontSize: '0.85rem'
-                }}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  promptType === 'dare'
+                    ? 'bg-pink-500/20 border-pink-500 text-pink-600 dark:text-pink-400'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                }`}
               >
                 DARE
               </button>
@@ -264,43 +201,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
               placeholder={`Enter your custom ${promptType} question or task...`}
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.6rem',
-                borderRadius: '0.5rem',
-                background: 'rgba(0,0,0,0.4)',
-                border: '1px solid var(--border-glass)',
-                color: '#fff',
-                fontSize: '0.875rem',
-                outline: 'none',
-                resize: 'none',
-                marginBottom: '0.75rem'
-              }}
+              className="w-full p-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 mb-3 resize-none"
             />
 
-            <button type="submit" className="glass-button btn-gold-gradient" style={{ width: '100%', padding: '0.6rem' }}>
+            <button type="submit" className="glass-button btn-gold-gradient w-full !py-2 text-xs">
               Add To Room Deck
             </button>
           </form>
 
           {customPrompts.length > 0 && (
-            <div style={{ marginTop: '1.25rem' }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+            <div className="mt-4">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
                 Current Custom Prompts ({customPrompts.length}):
               </div>
               {customPrompts.map((cp) => (
                 <div
                   key={cp.id}
-                  style={{
-                    fontSize: '0.8rem',
-                    padding: '0.4rem 0.6rem',
-                    borderRadius: '0.4rem',
-                    background: 'rgba(255,255,255,0.03)',
-                    marginBottom: '0.3rem',
-                    color: '#d1d5db'
-                  }}
+                  className="text-[11px] p-2 rounded-lg bg-slate-100 dark:bg-slate-800/50 mb-1.5 border border-slate-200 dark:border-slate-700/40 text-slate-800 dark:text-slate-200"
                 >
-                  <strong style={{ color: cp.type === 'truth' ? '#06b6d4' : '#ec4899' }}>
+                  <strong className={cp.type === 'truth' ? 'text-cyan-600 dark:text-cyan-400' : 'text-pink-600 dark:text-pink-400'}>
                     [{cp.type.toUpperCase()}]
                   </strong>{' '}
                   {cp.text}

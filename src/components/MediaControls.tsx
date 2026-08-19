@@ -39,23 +39,15 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
   };
 
   return (
-    <div className="media-controls-bar">
+    <div className="media-controls-bar bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-xl dark:shadow-slate-950/50 backdrop-blur-xl">
       {/* Mic Control */}
       <button
         onClick={onToggleMic}
-        style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          border: 'none',
-          background: isMuted ? 'rgba(244, 63, 94, 0.25)' : 'rgba(255, 255, 255, 0.1)',
-          color: isMuted ? '#f43f5e' : '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s'
-        }}
+        className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+          isMuted
+            ? 'bg-rose-500/20 text-rose-500 hover:bg-rose-500/30 ring-2 ring-rose-500/40'
+            : 'bg-slate-200/70 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-700'
+        }`}
         title={isMuted ? 'Unmute Microphone' : 'Mute Microphone'}
       >
         {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
@@ -64,19 +56,11 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
       {/* Camera Control */}
       <button
         onClick={onToggleVideo}
-        style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          border: 'none',
-          background: isVideoOff ? 'rgba(244, 63, 94, 0.25)' : 'rgba(255, 255, 255, 0.1)',
-          color: isVideoOff ? '#f43f5e' : '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s'
-        }}
+        className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+          isVideoOff
+            ? 'bg-rose-500/20 text-rose-500 hover:bg-rose-500/30 ring-2 ring-rose-500/40'
+            : 'bg-slate-200/70 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-700'
+        }`}
         title={isVideoOff ? 'Turn Camera On' : 'Turn Camera Off'}
       >
         {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
@@ -85,63 +69,24 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
       {/* Screen Share */}
       <button
         onClick={onToggleScreenShare}
-        style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          border: 'none',
-          background: 'rgba(255, 255, 255, 0.1)',
-          color: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s'
-        }}
+        className="w-11 h-11 rounded-full flex items-center justify-center bg-slate-200/70 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all"
         title="Share Screen"
       >
         <Monitor size={20} />
       </button>
 
       {/* Live Reactions Picker */}
-      <div style={{ position: 'relative' }}>
+      <div className="relative">
         <button
           onClick={() => setShowReactionPicker(!showReactionPicker)}
-          style={{
-            width: '46px',
-            height: '46px',
-            borderRadius: '50%',
-            border: 'none',
-            background: 'rgba(236, 72, 153, 0.2)',
-            color: '#ec4899',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
+          className="w-11 h-11 rounded-full flex items-center justify-center bg-pink-500/15 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400 hover:bg-pink-500/25 transition-all ring-1 ring-pink-500/30"
           title="Send Reaction Emoji"
         >
           <Smile size={20} />
         </button>
 
         {showReactionPicker && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '60px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(18, 22, 38, 0.95)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '1rem',
-              padding: '0.5rem',
-              display: 'flex',
-              gap: '0.4rem',
-              boxShadow: '0 8px 25px rgba(0,0,0,0.5)'
-            }}
-          >
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl p-2 flex gap-1.5 shadow-xl shadow-slate-900/20 animate-fadeIn z-50">
             {EMOJI_REACTIONS.map((emoji) => (
               <button
                 key={emoji}
@@ -149,15 +94,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
                   onSendReaction(emoji);
                   setShowReactionPicker(false);
                 }}
-                style={{
-                  fontSize: '1.4rem',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '0.3rem',
-                  borderRadius: '0.4rem',
-                  transition: 'transform 0.15s'
-                }}
+                className="text-xl p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-transform hover:scale-125"
               >
                 {emoji}
               </button>
@@ -169,19 +106,11 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
       {/* Sound FX Toggle */}
       <button
         onClick={handleToggleSound}
-        style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          border: 'none',
-          background: 'rgba(255, 255, 255, 0.1)',
-          color: soundEnabled ? '#10b981' : '#9ca3af',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s'
-        }}
+        className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+          soundEnabled
+            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25'
+            : 'bg-slate-200/70 dark:bg-slate-800/80 text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+        }`}
         title={soundEnabled ? 'Mute Game Sound FX' : 'Enable Game Sound FX'}
       >
         {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
@@ -191,19 +120,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
       {isHost && (
         <button
           onClick={onOpenSettings}
-          style={{
-            width: '46px',
-            height: '46px',
-            borderRadius: '50%',
-            border: 'none',
-            background: 'rgba(245, 158, 11, 0.2)',
-            color: '#f59e0b',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
+          className="w-11 h-11 rounded-full flex items-center justify-center bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25 transition-all"
           title="Room Host Settings"
         >
           <Settings size={20} />
@@ -214,45 +131,17 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
       {onSkipPartner && (
         <button
           onClick={onSkipPartner}
-          style={{
-            padding: '0.5rem 0.9rem',
-            borderRadius: '1.5rem',
-            border: 'none',
-            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
-            color: '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(236, 72, 153, 0.4)',
-            transition: 'all 0.2s',
-            marginLeft: '0.2rem'
-          }}
+          className="py-2 px-3.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white flex items-center gap-1.5 text-xs font-extrabold hover:opacity-95 shadow-md shadow-pink-500/30 transition-all ml-1"
           title="Skip Partner & Find Next Match"
         >
-          <SkipForward size={17} /> Next
+          <SkipForward size={16} /> Next
         </button>
       )}
 
       {/* Leave Call */}
       <button
         onClick={onLeaveRoom}
-        style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          border: 'none',
-          background: 'rgba(244, 63, 94, 0.9)',
-          color: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s',
-          marginLeft: '0.5rem'
-        }}
+        className="w-11 h-11 rounded-full flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/40 transition-all ml-2"
         title="Leave Room"
       >
         <LogOut size={20} />

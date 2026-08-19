@@ -38,28 +38,11 @@ export const GameStage: React.FC<GameStageProps> = ({
     return (
       <div
         onClick={() => setIsMinimized(false)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.6rem',
-          background: 'rgba(18, 22, 38, 0.92)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(236, 72, 153, 0.6)',
-          borderRadius: '2rem',
-          padding: '0.5rem 1.1rem',
-          color: '#ffffff',
-          cursor: 'pointer',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.8)',
-          margin: '0 auto',
-          zIndex: 40,
-          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          animation: 'smoothAppear 0.3s ease-out'
-        }}
+        className="flex items-center gap-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-pink-500/60 rounded-full px-4 py-2 text-slate-900 dark:text-slate-100 cursor-pointer shadow-xl shadow-pink-500/10 mx-auto z-40 transition-all hover:scale-105 animate-fadeIn"
         title="Tap to Maximize Game Card"
       >
-        <Dice5 size={20} color="#ec4899" />
-        <span style={{ fontSize: '0.85rem', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>
+        <Dice5 size={20} className="text-pink-500" />
+        <span className="text-xs font-extrabold font-heading">
           {room.gameState === 'idle'
             ? '🎲 Open Game Stage'
             : room.gameState === 'spinning'
@@ -68,46 +51,17 @@ export const GameStage: React.FC<GameStageProps> = ({
             ? '🎯 Choose Truth / Dare'
             : `🔥 ${room.currentQuestion?.type.toUpperCase() || 'Card'} Active`}
         </span>
-        <ChevronUp size={18} color="#f472b6" />
+        <ChevronUp size={18} className="text-pink-400" />
       </div>
     );
   }
 
   return (
-    <div
-      className="glass-panel"
-      style={{
-        padding: '1.25rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        overflowY: 'auto',
-        position: 'relative'
-      }}
-    >
+    <div className="glass-panel p-5 flex flex-col items-center justify-center h-full overflow-y-auto relative bg-white/80 dark:bg-slate-900/80 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-800 shadow-xl">
       {/* Top Right Minimize Button */}
       <button
         onClick={() => setIsMinimized(true)}
-        style={{
-          position: 'absolute',
-          top: '0.75rem',
-          right: '0.75rem',
-          background: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          color: '#ffffff',
-          borderRadius: '0.5rem',
-          padding: '0.25rem 0.6rem',
-          fontSize: '0.78rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.3rem',
-          zIndex: 15,
-          transition: 'all 0.2s'
-        }}
+        className="absolute top-3 right-3 bg-slate-200/70 dark:bg-slate-800/70 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg px-2.5 py-1 text-[11px] font-bold flex items-center gap-1 transition-colors hover:bg-slate-300 dark:hover:bg-slate-700 z-15"
         title="Minimize Game Card"
       >
         <ChevronDown size={14} />
@@ -116,21 +70,11 @@ export const GameStage: React.FC<GameStageProps> = ({
 
       {/* Mode Banner Indicator */}
       <div
-        style={{
-          position: 'absolute',
-          top: '0.75rem',
-          left: '0.75rem',
-          fontSize: '0.8rem',
-          padding: '0.25rem 0.6rem',
-          borderRadius: '1rem',
-          background: room.turnMode === 'staggered' ? 'rgba(236, 72, 153, 0.2)' : 'rgba(6, 182, 212, 0.2)',
-          border: room.turnMode === 'staggered' ? '1px solid #ec4899' : '1px solid #06b6d4',
-          color: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.3rem',
-          fontWeight: 600
-        }}
+        className={`absolute top-3 left-3 text-[11px] px-3 py-1 rounded-full font-bold flex items-center gap-1 border ${
+          room.turnMode === 'staggered'
+            ? 'bg-pink-500/10 border-pink-500/40 text-pink-600 dark:text-pink-400'
+            : 'bg-cyan-500/10 border-cyan-500/40 text-cyan-600 dark:text-cyan-400'
+        }`}
       >
         {room.turnMode === 'staggered' ? (
           <>🔄 Staggered Mode: Boy ➔ Girl</>
@@ -141,33 +85,21 @@ export const GameStage: React.FC<GameStageProps> = ({
 
       {/* State: IDLE */}
       {room.gameState === 'idle' && (
-        <div style={{ textAlign: 'center', margin: '2rem 0', width: '100%', maxWidth: '440px' }}>
+        <div className="text-center my-6 w-full max-w-md">
           {room.players.length < 2 ? (
             <div>
-              <div style={{ fontSize: '3rem', marginBottom: '0.5rem', animation: 'pulse 1.5s infinite' }}>⏳</div>
-              <h3 className="font-heading" style={{ fontSize: '1.4rem', color: '#f472b6', marginBottom: '0.4rem' }}>
+              <div className="text-4xl mb-2 animate-bounce">⏳</div>
+              <h3 className="font-heading text-lg font-extrabold text-pink-600 dark:text-pink-400 mb-1">
                 Waiting for Partner to Connect...
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">
                 Share your private room code or link with your partner to start the video call!
               </p>
 
-              <div
-                style={{
-                  background: 'rgba(0,0,0,0.4)',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.75rem',
-                  border: '1px solid rgba(236, 72, 153, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '0.5rem',
-                  marginBottom: '1rem'
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>ROOM CODE</span>
-                  <strong style={{ fontSize: '1.2rem', color: '#fff', letterSpacing: '1px' }}>{room.code}</strong>
+              <div className="bg-slate-100 dark:bg-slate-800/80 p-3 rounded-xl border border-pink-500/40 flex items-center justify-between gap-2 mb-3">
+                <div className="text-left">
+                  <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block">ROOM CODE</span>
+                  <strong className="text-lg text-slate-900 dark:text-slate-100 tracking-wider font-mono">{room.code}</strong>
                 </div>
                 <button
                   onClick={() => {
@@ -175,32 +107,30 @@ export const GameStage: React.FC<GameStageProps> = ({
                     navigator.clipboard.writeText(shareUrl);
                     alert('Room invite link copied to clipboard!');
                   }}
-                  className="glass-button btn-primary-gradient"
-                  style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+                  className="glass-button btn-primary-gradient !py-1.5 !px-3 text-xs"
                 >
                   Copy Link
                 </button>
               </div>
 
-              <div style={{ fontSize: '0.8rem', color: '#06b6d4' }}>
+              <div className="text-xs font-semibold text-cyan-600 dark:text-cyan-400">
                 ✨ Game will unlock automatically as soon as partner enters video call.
               </div>
             </div>
           ) : (
             <div>
-              <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🎡</div>
-              <h3 className="font-heading" style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#fff' }}>
+              <div className="text-4xl mb-2">🎡</div>
+              <h3 className="font-heading text-xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
                 Partner Connected! ❤️
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mb-6">
                 Spin the wheel to start your 1-on-1 Truth or Dare session!
               </p>
               <button
                 onClick={onSpin}
-                className="glass-button btn-primary-gradient"
-                style={{ fontSize: '1.1rem', padding: '0.85rem 2rem' }}
+                className="glass-button btn-primary-gradient text-sm !py-3 !px-8 font-bold"
               >
-                <Play size={20} fill="#fff" /> Spin The Wheel
+                <Play size={18} fill="currentColor" /> Spin The Wheel
               </button>
             </div>
           )}
@@ -209,13 +139,13 @@ export const GameStage: React.FC<GameStageProps> = ({
 
       {/* State: SPINNING */}
       {room.gameState === 'spinning' && (
-        <div style={{ textAlign: 'center', width: '100%' }}>
+        <div className="text-center w-full">
           <WheelSpinner
             players={room.players}
             targetPlayerId={room.currentTurnPlayerId}
             isSpinning={true}
           />
-          <p className="font-heading" style={{ marginTop: '1rem', fontSize: '1.2rem', color: '#ec4899' }}>
+          <p className="font-heading mt-4 text-lg font-black text-pink-600 dark:text-pink-400">
             Spinning Wheel... Who is next?
           </p>
         </div>
@@ -223,49 +153,39 @@ export const GameStage: React.FC<GameStageProps> = ({
 
       {/* State: CHOOSING */}
       {room.gameState === 'choosing' && (
-        <div style={{ textAlign: 'center', margin: '1.5rem 0', width: '100%', maxWidth: '480px' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🎯</div>
-          <h3 className="font-heading" style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '0.25rem' }}>
+        <div className="text-center my-4 w-full max-w-md">
+          <div className="text-3xl mb-2">🎯</div>
+          <h3 className="font-heading text-lg font-black text-slate-900 dark:text-slate-100 mb-1">
             {turnPlayer?.avatar} {turnPlayer?.name} Landed on the Wheel!
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mb-6">
             {isLocalTurn ? 'It is your turn! Make your choice:' : `Waiting for ${turnPlayer?.name} to choose...`}
           </p>
 
           {isLocalTurn ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => onSelectChoice('truth')}
-                className="glass-button btn-cyan-gradient"
-                style={{ padding: '1.25rem', fontSize: '1.2rem' }}
+                className="glass-button btn-cyan-gradient !py-4 text-lg font-black"
               >
-                <HelpCircle size={24} /> TRUTH
+                <HelpCircle size={22} /> TRUTH
               </button>
               <button
                 onClick={() => onSelectChoice('dare')}
-                className="glass-button btn-primary-gradient"
-                style={{ padding: '1.25rem', fontSize: '1.2rem' }}
+                className="glass-button btn-primary-gradient !py-4 text-lg font-black"
               >
-                <Flame size={24} /> DARE
+                <Flame size={22} /> DARE
               </button>
               <button
                 onClick={() => onSelectChoice(Math.random() > 0.5 ? 'truth' : 'dare')}
-                className="glass-button btn-gold-gradient"
-                style={{ gridColumn: 'span 2', padding: '0.75rem' }}
+                className="glass-button btn-gold-gradient col-span-2 !py-2.5 text-xs font-bold"
               >
-                <Dice5 size={20} /> Surprise Me (Random)
+                <Dice5 size={18} /> Surprise Me (Random)
               </button>
             </div>
           ) : (
-            <div
-              style={{
-                padding: '1.5rem',
-                borderRadius: '0.75rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px border-glass'
-              }}
-            >
-              <div className="font-heading" style={{ fontSize: '1.1rem', color: '#f472b6' }}>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="font-heading text-sm font-bold text-pink-600 dark:text-pink-400">
                 ⏳ Player is picking Truth or Dare...
               </div>
             </div>

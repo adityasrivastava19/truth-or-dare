@@ -13,51 +13,26 @@ export const ModeConsentModal: React.FC<ModeConsentModalProps> = ({
   onRespond
 }) => {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.85)',
-        backdropFilter: 'blur(12px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2500,
-        padding: '1rem'
-      }}
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: '100%',
-          maxWidth: '460px',
-          padding: '2rem 1.5rem',
-          textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(18, 22, 38, 0.95), rgba(236, 72, 153, 0.3))',
-          border: '2px solid #ec4899',
-          boxShadow: '0 0 35px rgba(236, 72, 153, 0.6)'
-        }}
-      >
-        <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌶️</div>
-        <h3 className="font-heading" style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '0.4rem' }}>
+    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-[2500] p-4 animate-fadeIn">
+      <div className="glass-panel w-full max-w-md p-6 sm:p-8 text-center bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 border-2 border-pink-500 shadow-2xl shadow-pink-500/20">
+        <div className="text-4xl mb-3">🌶️</div>
+        <h3 className="font-heading text-xl font-extrabold mb-2">
           Mode Request from {requesterName}
         </h3>
-        <p style={{ color: '#e4e4e7', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.4 }}>
-          Your partner requested <strong style={{ color: '#f472b6' }}>Erotic & Spicy 1-on-1 Mode</strong> for this video call! Do you consent and accept?
+        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
+          Your partner requested <strong className="text-pink-600 dark:text-pink-400">Erotic & Spicy 1-on-1 Mode</strong> for this video call! Do you consent and accept?
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="flex flex-col gap-3">
           <button
             onClick={() => onRespond(true)}
-            className="glass-button btn-primary-gradient"
-            style={{ width: '100%', padding: '0.85rem', fontSize: '1rem' }}
+            className="glass-button btn-primary-gradient w-full !py-3 text-sm font-bold"
           >
             <Flame size={20} /> 🔥 Accept Erotic Mode
           </button>
           <button
             onClick={() => onRespond(false)}
-            className="glass-button"
-            style={{ width: '100%', padding: '0.75rem', background: 'rgba(255,255,255,0.08)' }}
+            className="glass-button w-full !py-2.5 text-xs font-semibold"
           >
             <ShieldCheck size={18} /> 🧊 Keep Normal / Classic Mode
           </button>

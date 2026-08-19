@@ -82,122 +82,68 @@ export const CardViewer: React.FC<CardViewerProps> = ({
   const isTruth = question.type === 'truth';
 
   return (
-    <div style={{ perspective: '1000px', width: '100%', maxWidth: '540px', margin: '0 auto' }}>
+    <div style={{ perspective: '1000px' }} className="w-full max-w-lg mx-auto">
       <div
         className={`flip-card-inner ${isFlipped ? 'flip-card-flipped' : ''}`}
         style={{ position: 'relative', width: '100%', minHeight: '320px' }}
       >
         {/* Card Front (Hidden side) */}
         <div
-          className="flip-card-front glass-panel"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.3))'
-          }}
+          className="flip-card-front glass-panel absolute inset-0 flex items-center justify-center bg-gradient-to-br from-pink-500/30 to-purple-600/30 border border-slate-200 dark:border-slate-800"
         >
-          <div style={{ fontSize: '3rem' }}>🔥 Revealing Card...</div>
+          <div className="text-2xl font-black font-heading text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            🔥 Revealing Card...
+          </div>
         </div>
 
         {/* Card Back (Revealed Content) */}
         <div
-          className="flip-card-back glass-panel"
-          style={{
-            padding: '1.75rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            background: isTruth
-              ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 182, 212, 0.3) 100%)'
-              : 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(236, 72, 153, 0.3) 100%)',
-            border: isTruth ? '2px solid #06b6d4' : '2px solid #ec4899',
-            boxShadow: isTruth ? '0 0 30px rgba(6, 182, 212, 0.4)' : '0 0 30px rgba(236, 72, 153, 0.4)'
-          }}
+          className={`flip-card-back glass-panel p-6 flex flex-col justify-between shadow-2xl transition-all border-2 ${
+            isTruth
+              ? 'bg-white/95 dark:bg-slate-900/95 border-cyan-500 shadow-cyan-500/20'
+              : 'bg-white/95 dark:bg-slate-900/95 border-pink-500 shadow-pink-500/20'
+          }`}
         >
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+          <div className="flex items-center justify-between mb-3">
             <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.35rem 0.9rem',
-                borderRadius: '2rem',
-                fontSize: '0.9rem',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                background: isTruth ? '#06b6d4' : '#ec4899',
-                color: '#fff',
-                boxShadow: isTruth ? '0 0 12px rgba(6, 182, 212, 0.6)' : '0 0 12px rgba(236, 72, 153, 0.6)'
-              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase text-white shadow-md ${
+                isTruth ? 'bg-cyan-500 shadow-cyan-500/40' : 'bg-pink-500 shadow-pink-500/40'
+              }`}
             >
-              {isTruth ? <HelpCircle size={16} /> : <Flame size={16} />}
+              {isTruth ? <HelpCircle size={15} /> : <Flame size={15} />}
               {question.type} • {question.category}
             </span>
 
             {/* Timer Badge */}
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                fontSize: '1.1rem',
-                fontWeight: 800,
-                color: timerColor,
-                background: 'rgba(0,0,0,0.5)',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '1rem',
-                border: '1px solid rgba(255,255,255,0.1)'
-              }}
+              className="flex items-center gap-1 text-sm font-black px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm"
+              style={{ color: timerColor }}
             >
-              <Timer size={18} /> {timeLeft}s
+              <Timer size={16} /> {timeLeft}s
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div style={{ width: '100%', height: '8px', background: 'rgba(0,0,0,0.5)', borderRadius: '4px', marginBottom: '1rem', overflow: 'hidden' }}>
+          <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full mb-4 overflow-hidden">
             <div
+              className="h-full rounded-full transition-all duration-1000 ease-linear"
               style={{
                 width: `${timerPercent}%`,
-                height: '100%',
-                background: timerColor,
-                borderRadius: '4px',
-                transition: 'width 1s linear',
+                backgroundColor: timerColor,
                 boxShadow: `0 0 10px ${timerColor}`
               }}
             />
           </div>
 
-          {/* High-Contrast Prompt Text Container */}
-          <div
-            style={{
-              textAlign: 'center',
-              margin: '0.5rem 0',
-              padding: '1.25rem 1rem',
-              background: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '0.85rem',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            <p
-              className="font-heading"
-              style={{
-                fontSize: 'clamp(1.25rem, 3.5vw, 1.6rem)',
-                fontWeight: 800,
-                lineHeight: 1.4,
-                color: '#ffffff',
-                textShadow: '0 2px 10px rgba(0,0,0,0.9)'
-              }}
-            >
+          {/* Prompt Text Container */}
+          <div className="text-center my-2 p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 backdrop-blur-md">
+            <p className="font-heading text-lg sm:text-xl font-extrabold leading-relaxed text-slate-900 dark:text-slate-100">
               "{question.text}"
             </p>
             {turnPlayer && (
-              <p style={{ marginTop: '0.75rem', fontSize: '0.9rem', color: '#f472b6', fontWeight: 600 }}>
-                Assigned to: <strong style={{ color: '#fff', textDecoration: 'underline' }}>{turnPlayer.name}</strong> {turnPlayer.avatar}
+              <p className="mt-3 text-xs font-semibold text-pink-600 dark:text-pink-400">
+                Assigned to: <strong className="text-slate-900 dark:text-slate-100 underline font-extrabold">{turnPlayer.name}</strong> {turnPlayer.avatar}
               </p>
             )}
           </div>
@@ -205,68 +151,51 @@ export const CardViewer: React.FC<CardViewerProps> = ({
           {/* Action Buttons */}
           {isLocalTurn ? (
             isPendingApproval ? (
-              <div style={{ textAlign: 'center', marginTop: '1.25rem', padding: '1rem', background: 'rgba(236,72,153,0.15)', borderRadius: '0.75rem', border: '1px solid #ec4899' }}>
-                <p style={{ fontWeight: 700, color: '#fff', fontSize: '1rem' }}>
-                  ⏳ Submitted! Waiting for your Opponent to Accept & Verify your Dare live...
-                </p>
+              <div className="text-center mt-4 p-3.5 rounded-xl bg-pink-500/10 border border-pink-500 text-pink-700 dark:text-pink-300 font-bold text-xs">
+                ⏳ Submitted! Waiting for your Opponent to Accept & Verify your Dare live...
               </div>
             ) : (
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+              <div className="flex gap-2.5 mt-4">
                 <button
                   onClick={handleForfeit}
-                  className="glass-button"
-                  style={{ flex: 1, background: 'rgba(244, 63, 94, 0.25)', borderColor: 'rgba(244, 63, 94, 0.4)' }}
+                  className="glass-button flex-1 bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-xs font-bold"
                 >
-                  <XCircle size={18} /> Forfeit (-5 pts)
+                  <XCircle size={16} /> Forfeit (-5 pts)
                 </button>
                 <button
                   onClick={handleComplete}
-                  className="glass-button btn-primary-gradient"
-                  style={{ flex: 1.5 }}
+                  className="glass-button btn-primary-gradient flex-[1.5] text-xs font-bold"
                 >
-                  <CheckCircle size={18} /> Submit to Opponent for Approval
+                  <CheckCircle size={16} /> Submit to Opponent
                 </button>
                 {onReroll && (
                   <button
                     onClick={onReroll}
-                    className="glass-button"
+                    className="glass-button !p-2.5 text-slate-600 dark:text-slate-300"
                     title="Reroll Question"
-                    style={{ padding: '0.75rem' }}
                   >
-                    <RefreshCw size={18} />
+                    <RefreshCw size={16} />
                   </button>
                 )}
               </div>
             )
           ) : (
-            <div
-              style={{
-                marginTop: '1.25rem',
-                padding: '1rem',
-                background: 'linear-gradient(135deg, rgba(18, 22, 38, 0.95), rgba(139, 92, 246, 0.3))',
-                borderRadius: '0.85rem',
-                border: '2px solid #8b5cf6',
-                boxShadow: '0 0 20px rgba(139, 92, 246, 0.4)',
-                textAlign: 'center'
-              }}
-            >
-              <p style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem', marginBottom: '0.75rem' }}>
-                Did <strong style={{ color: '#f472b6' }}>{turnPlayer?.name || 'Opponent'}</strong> perform this Dare live on video?
+            <div className="mt-4 p-4 rounded-xl bg-purple-500/10 dark:bg-purple-950/40 border border-purple-500/40 text-center">
+              <p className="font-bold text-slate-900 dark:text-slate-100 text-xs mb-3">
+                Did <strong className="text-pink-600 dark:text-pink-400">{turnPlayer?.name || 'Opponent'}</strong> perform this Dare live on video?
               </p>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="flex gap-2">
                 <button
                   onClick={handleOpponentReject}
-                  className="glass-button"
-                  style={{ flex: 1, background: 'rgba(244, 63, 94, 0.3)', borderColor: '#f43f5e', padding: '0.65rem' }}
+                  className="glass-button flex-1 bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400 text-xs font-bold"
                 >
-                  <XCircle size={18} /> ❌ Reject (-5 pts)
+                  <XCircle size={16} /> Reject (-5 pts)
                 </button>
                 <button
                   onClick={handleOpponentAccept}
-                  className="glass-button btn-primary-gradient"
-                  style={{ flex: 1.5, padding: '0.65rem' }}
+                  className="glass-button btn-primary-gradient flex-[1.5] text-xs font-bold"
                 >
-                  <CheckCircle size={18} /> ✅ Accept (+10 pts)
+                  <CheckCircle size={16} /> Accept (+10 pts)
                 </button>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Video, Mic, Sparkles, Users, RefreshCw, Zap, ArrowRight, ShieldCheck, Heart, Dice5 } from 'lucide-react';
+import { Video, Mic, Sparkles, Users, RefreshCw, Zap, ArrowRight, ShieldCheck, Heart, Dice5, Sun, Moon } from 'lucide-react';
 import { GenderType, TurnMode, GameCategory } from '../types/game';
 import { rtcManager } from '../services/webrtc';
+import { useTheme } from '../context/ThemeContext';
 
 interface LobbyProps {
   onJoinRoom: (data: { name: string; avatar: string; gender: GenderType; code: string }) => void;
@@ -18,6 +19,7 @@ export const Lobby: React.FC<LobbyProps> = ({
   onJoinMatchmaking,
   initialRoomCode = ''
 }) => {
+  const { theme, toggleTheme } = useTheme();
   const [name, setName] = useState<string>(() => localStorage.getItem('tod_player_name') || '');
   const [avatar, setAvatar] = useState<string>(() => localStorage.getItem('tod_player_avatar') || '🔥');
   const [gender, setGender] = useState<GenderType>(() => (localStorage.getItem('tod_player_gender') as GenderType) || 'male');
@@ -84,6 +86,19 @@ export const Lobby: React.FC<LobbyProps> = ({
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem 1rem' }}>
+      {/* Top Bar with Theme Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <button
+          onClick={toggleTheme}
+          className="glass-button"
+          style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-indigo-600" />}
+          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+        </button>
+      </div>
+
       {/* Header Banner */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <div
@@ -93,11 +108,11 @@ export const Lobby: React.FC<LobbyProps> = ({
             gap: '0.5rem',
             padding: '0.4rem 1rem',
             borderRadius: '2rem',
-            background: 'rgba(236, 72, 153, 0.15)',
+            background: theme === 'dark' ? 'rgba(236, 72, 153, 0.15)' : 'rgba(236, 72, 153, 0.1)',
             border: '1px solid rgba(236, 72, 153, 0.3)',
-            color: '#f472b6',
+            color: '#ec4899',
             fontSize: '0.875rem',
-            fontWeight: 600,
+            fontWeight: 700,
             marginBottom: '1rem'
           }}
         >
@@ -108,7 +123,9 @@ export const Lobby: React.FC<LobbyProps> = ({
           style={{
             fontSize: 'clamp(2.5rem, 5vw, 4rem)',
             fontWeight: 900,
-            background: 'linear-gradient(135deg, #ffffff 0%, #ec4899 50%, #8b5cf6 100%)',
+            background: theme === 'dark'
+              ? 'linear-gradient(135deg, #ffffff 0%, #ec4899 50%, #8b5cf6 100%)'
+              : 'linear-gradient(135deg, #0f172a 0%, #ec4899 50%, #8b5cf6 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             lineHeight: 1.15
@@ -196,8 +213,8 @@ export const Lobby: React.FC<LobbyProps> = ({
           )}
 
           {/* Name Input */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.4rem', fontWeight: 500 }}>
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Display Name
             </label>
             <input
@@ -205,39 +222,26 @@ export const Lobby: React.FC<LobbyProps> = ({
               placeholder="Enter your name..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.75rem',
-                background: 'rgba(0,0,0,0.4)',
-                border: '1px solid var(--border-glass)',
-                color: '#fff',
-                fontSize: '1rem',
-                outline: 'none'
-              }}
+              className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all font-medium"
             />
           </div>
 
           {/* Avatar Selector */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.4rem', fontWeight: 500 }}>
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Choose Avatar Emoji
             </label>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div className="flex gap-2 flex-wrap">
               {AVATARS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => setAvatar(emoji)}
-                  style={{
-                    fontSize: '1.4rem',
-                    padding: '0.4rem 0.6rem',
-                    borderRadius: '0.5rem',
-                    background: avatar === emoji ? 'rgba(236, 72, 153, 0.3)' : 'rgba(255,255,255,0.05)',
-                    border: avatar === emoji ? '2px solid #ec4899' : '1px solid transparent',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
+                  className={`text-xl p-2 rounded-xl border transition-all ${
+                    avatar === emoji
+                      ? 'bg-pink-500/20 border-pink-500 scale-110 shadow-md shadow-pink-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                  }`}
                 >
                   {emoji}
                 </button>
@@ -247,53 +251,40 @@ export const Lobby: React.FC<LobbyProps> = ({
 
           {/* Gender Tag Picker */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.4rem', fontWeight: 500 }}>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Gender / Profile Tag (Used for Staggered Turns)
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setGender('male')}
-                style={{
-                  padding: '0.6rem',
-                  borderRadius: '0.5rem',
-                  background: gender === 'male' ? 'rgba(6, 182, 212, 0.25)' : 'rgba(255,255,255,0.05)',
-                  border: gender === 'male' ? '2px solid #06b6d4' : '1px solid var(--border-glass)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={`py-2.5 px-3 rounded-xl font-semibold text-sm transition-all border ${
+                  gender === 'male'
+                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-700 dark:text-cyan-400 shadow-md shadow-cyan-500/10'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                }`}
               >
                 👨 Male
               </button>
               <button
                 type="button"
                 onClick={() => setGender('female')}
-                style={{
-                  padding: '0.6rem',
-                  borderRadius: '0.5rem',
-                  background: gender === 'female' ? 'rgba(236, 72, 153, 0.25)' : 'rgba(255,255,255,0.05)',
-                  border: gender === 'female' ? '2px solid #ec4899' : '1px solid var(--border-glass)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={`py-2.5 px-3 rounded-xl font-semibold text-sm transition-all border ${
+                  gender === 'female'
+                    ? 'bg-pink-500/20 border-pink-500 text-pink-700 dark:text-pink-400 shadow-md shadow-pink-500/10'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                }`}
               >
                 👩 Female
               </button>
               <button
                 type="button"
                 onClick={() => setGender('neutral')}
-                style={{
-                  gridColumn: 'span 2',
-                  padding: '0.6rem',
-                  borderRadius: '0.5rem',
-                  background: gender === 'neutral' ? 'rgba(139, 92, 246, 0.25)' : 'rgba(255,255,255,0.05)',
-                  border: gender === 'neutral' ? '2px solid #8b5cf6' : '1px solid var(--border-glass)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={`col-span-2 py-2.5 px-3 rounded-xl font-semibold text-sm transition-all border ${
+                  gender === 'neutral'
+                    ? 'bg-purple-500/20 border-purple-500 text-purple-700 dark:text-purple-400 shadow-md shadow-purple-500/10'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                }`}
               >
                 🌈 Non-Binary / Neutral
               </button>
@@ -308,7 +299,9 @@ export const Lobby: React.FC<LobbyProps> = ({
             className="glass-panel"
             style={{
               padding: '1.5rem',
-              background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%)',
+              background: theme === 'dark'
+                ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%)'
+                : 'linear-gradient(135deg, rgba(244, 232, 255, 0.9) 0%, rgba(252, 231, 243, 0.9) 100%)',
               border: '1px solid rgba(236, 72, 153, 0.4)'
             }}
           >
@@ -322,7 +315,8 @@ export const Lobby: React.FC<LobbyProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#fff'
+                  color: '#fff',
+                  flexShrink: 0
                 }}
               >
                 <Zap size={22} />
@@ -331,7 +325,7 @@ export const Lobby: React.FC<LobbyProps> = ({
                 <h3 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 700 }}>
                   1-on-1 Speed Matchmaking
                 </h3>
-                <p style={{ fontSize: '0.85rem', color: '#e4e4e7' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   Auto-pair with an opposite gender / complementary player in a private call!
                 </p>
               </div>
@@ -373,18 +367,7 @@ export const Lobby: React.FC<LobbyProps> = ({
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                   maxLength={10}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.75rem',
-                    background: 'rgba(0,0,0,0.4)',
-                    border: '1px solid var(--border-glass)',
-                    color: '#fff',
-                    fontSize: '1rem',
-                    letterSpacing: '1px',
-                    fontWeight: 700,
-                    outline: 'none'
-                  }}
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-bold uppercase tracking-wider text-base"
                 />
                 <button type="submit" className="glass-button btn-cyan-gradient" style={{ whiteSpace: 'nowrap' }}>
                   Join <ArrowRight size={18} />
@@ -434,63 +417,43 @@ export const Lobby: React.FC<LobbyProps> = ({
 
       {/* Create Room Modal */}
       {showCreateModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.8)',
-            backdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem',
-            zIndex: 1000
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '520px', padding: '2rem' }}>
-            <h2 className="font-heading" style={{ fontSize: '1.5rem', marginBottom: '1.25rem', color: '#fff' }}>
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4 z-[1000] animate-fadeIn">
+          <div className="glass-panel w-full max-w-lg p-6 sm:p-8 bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <h2 className="font-heading text-xl sm:text-2xl font-extrabold mb-5 flex items-center gap-2">
               ⚙️ Party Room Settings
             </h2>
             <form onSubmit={handleCreate}>
               {/* Turn Mode Selector */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', color: '#d1d5db', marginBottom: '0.5rem', fontWeight: 600 }}>
+              <div className="mb-6">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Turn Selection Mode
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setTurnMode('staggered')}
-                    style={{
-                      padding: '0.85rem',
-                      borderRadius: '0.75rem',
-                      background: turnMode === 'staggered' ? 'rgba(236, 72, 153, 0.25)' : 'rgba(255,255,255,0.05)',
-                      border: turnMode === 'staggered' ? '2px solid #ec4899' : '1px solid var(--border-glass)',
-                      color: '#fff',
-                      textAlign: 'left',
-                      cursor: 'pointer'
-                    }}
+                    className={`p-3.5 rounded-xl text-left border transition-all ${
+                      turnMode === 'staggered'
+                        ? 'bg-pink-500/15 border-pink-500 ring-2 ring-pink-500/30'
+                        : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                    }`}
                   >
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f472b6' }}>🔄 Staggered Mode</div>
-                    <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.2rem' }}>
+                    <div className="font-bold text-sm text-pink-600 dark:text-pink-400">🔄 Staggered Mode</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       Alternates Boy ➔ Girl turns automatically
                     </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setTurnMode('random')}
-                    style={{
-                      padding: '0.85rem',
-                      borderRadius: '0.75rem',
-                      background: turnMode === 'random' ? 'rgba(6, 182, 212, 0.25)' : 'rgba(255,255,255,0.05)',
-                      border: turnMode === 'random' ? '2px solid #06b6d4' : '1px solid var(--border-glass)',
-                      color: '#fff',
-                      textAlign: 'left',
-                      cursor: 'pointer'
-                    }}
+                    className={`p-3.5 rounded-xl text-left border transition-all ${
+                      turnMode === 'random'
+                        ? 'bg-cyan-500/15 border-cyan-500 ring-2 ring-cyan-500/30'
+                        : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                    }`}
                   >
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#38bdf8' }}>🎲 Random Spin</div>
-                    <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.2rem' }}>
+                    <div className="font-bold text-sm text-cyan-600 dark:text-cyan-400">🎲 Random Spin</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       Picks any random player in room
                     </div>
                   </button>
@@ -498,22 +461,14 @@ export const Lobby: React.FC<LobbyProps> = ({
               </div>
 
               {/* Category Selector */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', color: '#d1d5db', marginBottom: '0.5rem', fontWeight: 600 }}>
+              <div className="mb-6">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Question Category Deck
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as GameCategory)}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.75rem',
-                    background: 'rgba(0,0,0,0.5)',
-                    border: '1px solid var(--border-glass)',
-                    color: '#fff',
-                    fontSize: '1rem'
-                  }}
+                  className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="all">🌟 All Categories Mix</option>
                   <option value="classic">🎉 Classic Party</option>
@@ -525,16 +480,15 @@ export const Lobby: React.FC<LobbyProps> = ({
                 </select>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}>
+              <div className="flex gap-3 mt-8">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="glass-button"
-                  style={{ flex: 1 }}
+                  className="glass-button flex-1"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="glass-button btn-primary-gradient" style={{ flex: 1 }}>
+                <button type="submit" className="glass-button btn-primary-gradient flex-1">
                   Create & Launch Room
                 </button>
               </div>

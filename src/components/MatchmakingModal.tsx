@@ -16,99 +16,41 @@ export const MatchmakingModal: React.FC<MatchmakingModalProps> = ({
   const targetText = preference === 'opposite' ? (gender === 'male' ? 'Female 👩' : gender === 'female' ? 'Male 👨' : 'Complementary 🌈') : 'Any ⚡';
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0, 0, 0, 0.85)',
-        backdropFilter: 'blur(12px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2000,
-        padding: '1rem'
-      }}
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: '100%',
-          maxWidth: '420px',
-          padding: '2.5rem 1.5rem',
-          textAlign: 'center',
-          position: 'relative',
-          background: 'linear-gradient(135deg, rgba(18, 22, 38, 0.95), rgba(236, 72, 153, 0.2))'
-        }}
-      >
+    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-[2000] p-4 animate-fadeIn">
+      <div className="glass-panel w-full max-w-md p-8 text-center relative bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-slate-800">
         <button
           onClick={onCancel}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-muted)',
-            cursor: 'pointer'
-          }}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
         >
           <X size={20} />
         </button>
 
         {/* Pulse Radar Animation */}
-        <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 1.5rem auto' }}>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              background: 'rgba(236, 72, 153, 0.2)',
-              animation: 'pulseRadar 2s infinite ease-out'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              inset: '15px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              boxShadow: '0 0 25px rgba(236, 72, 153, 0.6)'
-            }}
-          >
+        <div className="relative w-24 h-24 mx-auto mb-6">
+          <div className="absolute inset-0 rounded-full bg-pink-500/20 animate-ping" />
+          <div className="absolute inset-3 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/50">
             <Heart size={36} />
           </div>
         </div>
 
-        <h3 className="font-heading" style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '0.5rem' }}>
+        <h3 className="font-heading text-xl font-black mb-2">
           Finding Match...
         </h3>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-          Searching for a <strong style={{ color: '#ec4899' }}>{targetText}</strong> player for a private 1-on-1 Truth or Dare video call...
+        <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+          Searching for a <strong className="text-pink-600 dark:text-pink-400">{targetText}</strong> player for a private 1-on-1 Truth or Dare video call...
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#06b6d4' }}>
+        <div className="flex items-center justify-center gap-2 text-cyan-600 dark:text-cyan-400 font-semibold text-xs">
           <Loader2 className="animate-spin" size={18} /> Connecting WebRTC match engine...
         </div>
 
         <button
           onClick={onCancel}
-          className="glass-button"
-          style={{ marginTop: '2rem', width: '100%', borderColor: 'rgba(244, 63, 94, 0.4)', color: '#f43f5e' }}
+          className="glass-button w-full mt-8 border-rose-500/40 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10"
         >
           Cancel Queue
         </button>
       </div>
-
-      <style>{`
-        @keyframes pulseRadar {
-          0% { transform: scale(0.8); opacity: 1; }
-          100% { transform: scale(1.6); opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 };

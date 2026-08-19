@@ -30,106 +30,65 @@ export const RateOpponentModal: React.FC<RateOpponentModalProps> = ({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.85)',
-        backdropFilter: 'blur(12px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2500,
-        padding: '1rem'
-      }}
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: '100%',
-          maxWidth: '440px',
-          padding: '2rem 1.5rem',
-          position: 'relative'
-        }}
-      >
+    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-[2500] p-4 animate-fadeIn">
+      <div className="glass-panel w-full max-w-md p-6 sm:p-8 relative bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-slate-800">
         <button
           onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-muted)',
-            cursor: 'pointer'
-          }}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
         >
           <X size={20} />
         </button>
 
-        <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-          <div style={{ fontSize: '2.5rem' }}>{opponent.avatar}</div>
-          <h3 className="font-heading" style={{ fontSize: '1.35rem', color: '#fff' }}>
+        <div className="text-center mb-5">
+          <div className="text-4xl mb-2">{opponent.avatar}</div>
+          <h3 className="font-heading text-xl font-extrabold">
             Rate & Mark {opponent.name}
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
             Leave a badge tag or report your experience with this opponent.
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Rating Stars */}
-          <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+          <div className="text-center mb-5">
+            <div className="flex justify-center gap-1.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
                   onClick={() => setRating(star)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: star <= rating ? '#f59e0b' : 'rgba(255,255,255,0.2)',
-                    transition: 'transform 0.15s'
-                  }}
+                  className={`p-1 transition-transform hover:scale-125 ${star <= rating ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700'}`}
                 >
-                  <Star size={28} fill={star <= rating ? '#f59e0b' : 'none'} />
+                  <Star size={28} fill={star <= rating ? 'currentColor' : 'none'} />
                 </button>
               ))}
             </div>
           </div>
 
           {/* Badge Selection */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem' }}>
+          <div className="flex flex-col gap-2 mb-6">
             {BADGES.map((b) => (
               <button
                 key={b.id}
                 type="button"
                 onClick={() => setSelectedBadge(b.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.75rem',
-                  background: selectedBadge === b.id ? 'rgba(236, 72, 153, 0.25)' : 'rgba(255,255,255,0.04)',
-                  border: selectedBadge === b.id ? '1px solid #ec4899' : '1px solid var(--border-glass)',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left'
-                }}
+                className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
+                  selectedBadge === b.id
+                    ? 'bg-pink-500/15 border-pink-500 ring-2 ring-pink-500/30'
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700/50'
+                }`}
               >
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{b.label}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{b.desc}</div>
+                  <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">{b.label}</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">{b.desc}</div>
                 </div>
-                {selectedBadge === b.id && <Check size={18} color="#ec4899" />}
+                {selectedBadge === b.id && <Check size={18} className="text-pink-500" />}
               </button>
             ))}
           </div>
 
-          <button type="submit" className="glass-button btn-primary-gradient" style={{ width: '100%', padding: '0.85rem' }}>
+          <button type="submit" className="glass-button btn-primary-gradient w-full !py-3 text-sm font-bold">
             Submit Rating & Mark Opponent
           </button>
         </form>
