@@ -386,16 +386,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     bottom: 5.2rem;
     left: 0.5rem;
     right: 0.5rem;
-    max-height: 45vh;
+    max-height: 48vh;
     overflow-y: auto;
     z-index: 30;
-    background: rgba(18, 22, 38, 0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-glass);
-    border-radius: 1.25rem;
-    padding: 0.75rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
   }
 
   .media-controls-bar.mobile-controls-float {

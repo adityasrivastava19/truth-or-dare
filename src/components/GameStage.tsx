@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { WheelSpinner } from './WheelSpinner';
 import { CardViewer } from './CardViewer';
 import { RoomState, Player } from '../types/game';
-import { Play, Sparkles, HelpCircle, Flame, RefreshCw, Dice5 } from 'lucide-react';
+import { Play, Sparkles, HelpCircle, Flame, RefreshCw, Dice5, ChevronDown, ChevronUp, Maximize2, Minimize2 } from 'lucide-react';
 
 interface GameStageProps {
   room: RoomState;
@@ -23,8 +23,55 @@ export const GameStage: React.FC<GameStageProps> = ({
   onVerifyDare,
   onReroll
 }) => {
+  const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const turnPlayer = room.players.find((p) => p.id === room.currentTurnPlayerId);
   const isLocalTurn = room.currentTurnPlayerId === localPlayer.id;
+
+  // Auto-expand game stage when a new question or selection begins
+  useEffect(() => {
+    if (room.gameState === 'answering' || room.gameState === 'choosing' || room.gameState === 'spinning') {
+      setIsMinimized(false);
+    }
+  }, [room.gameState, room.currentQuestion]);
+
+  if (isMinimized) {
+    return (
+      <div
+        onClick={() => setIsMinimized(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          background: 'rgba(18, 22, 38, 0.92)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(236, 72, 153, 0.6)',
+          borderRadius: '2rem',
+          padding: '0.5rem 1.1rem',
+          color: '#ffffff',
+          cursor: 'pointer',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.8)',
+          margin: '0 auto',
+          zIndex: 40,
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          animation: 'smoothAppear 0.3s ease-out'
+        }}
+        title="Tap to Maximize Game Card"
+      >
+        <Dice5 size={20} color="#ec4899" />
+        <span style={{ fontSize: '0.85rem', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>
+          {room.gameState === 'idle'
+            ? '🎲 Open Game Stage'
+            : room.gameState === 'spinning'
+            ? '🌀 Wheel Spinning...'
+            : room.gameState === 'choosing'
+            ? '🎯 Choose Truth / Dare'
+            : `🔥 ${room.currentQuestion?.type.toUpperCase() || 'Card'} Active`}
+        </span>
+        <ChevronUp size={18} color="#f472b6" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -40,6 +87,33 @@ export const GameStage: React.FC<GameStageProps> = ({
         position: 'relative'
       }}
     >
+      {/* Top Right Minimize Button */}
+      <button
+        onClick={() => setIsMinimized(true)}
+        style={{
+          position: 'absolute',
+          top: '0.75rem',
+          right: '0.75rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: '#ffffff',
+          borderRadius: '0.5rem',
+          padding: '0.25rem 0.6rem',
+          fontSize: '0.78rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          zIndex: 15,
+          transition: 'all 0.2s'
+        }}
+        title="Minimize Game Card"
+      >
+        <ChevronDown size={14} />
+        <span>Minimize</span>
+      </button>
+
       {/* Mode Banner Indicator */}
       <div
         style={{
