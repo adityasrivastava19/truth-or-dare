@@ -24,7 +24,9 @@ export class WebRTCManager {
   public async initLocalStream(videoDeviceId?: string, audioDeviceId?: string): Promise<MediaStream> {
     try {
       const constraints: MediaStreamConstraints = {
-        audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
+        audio: audioDeviceId
+          ? { deviceId: { exact: audioDeviceId }, echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+          : { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
         video: videoDeviceId
           ? { deviceId: { exact: videoDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
           : { width: { ideal: 1280 }, height: { ideal: 720 } }

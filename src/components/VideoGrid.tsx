@@ -187,6 +187,21 @@ const VideoCard: React.FC<VideoCardProps> = ({
         transition: 'all 0.3s ease'
       }}
     >
+      {/* Separate Audio Element for Remote Stream to guarantee main speakerphone output on iOS & Android */}
+      {!isLocal && stream && (
+        <audio
+          ref={(audioEl) => {
+            if (audioEl && audioEl.srcObject !== stream) {
+              audioEl.srcObject = stream;
+              audioEl.play().catch((err) => console.warn('[VideoCard] Speakerphone audio playback warning:', err));
+            }
+          }}
+          autoPlay
+          playsInline
+          style={{ display: 'none' }}
+        />
+      )}
+
       {/* Video element */}
       {stream && !player.isVideoOff ? (
         <video
