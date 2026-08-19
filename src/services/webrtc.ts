@@ -4,13 +4,18 @@ const ICE_SERVERS: RTCConfiguration = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' }
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' },
+    { urls: 'stun:stun.services.mozilla.com' }
   ]
 };
 
 export class WebRTCManager {
   private localStream: MediaStream | null = null;
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
+  private remoteStreams: Map<string, MediaStream> = new Map();
+  private pendingCandidates: Map<string, RTCIceCandidateInit[]> = new Map();
   private onRemoteStreamCallbacks: Map<string, (stream: MediaStream) => void> = new Map();
   private onPeerDisconnectedCallbacks: Map<string, () => void> = new Map();
   private isScreenSharing: boolean = false;
@@ -113,9 +118,28 @@ export class WebRTCManager {
     // Remote Stream track received
     pc.ontrack = (event) => {
       console.log(`[WebRTC] Received track from peer ${peerId}:`, event.track.kind);
-      const stream = event.streams[0] || new MediaStream([event.track]);
+      let stream = this.remoteStreams.get(peerId);
+      if (!stream) {
+        stream = new MediaStream();
+        this.remoteStreams.set(peerId, stream);
+      }
+      
+      // Remove stale track of same kind if exists
+      const existing = stream.getTracks().filter((t) => t.kind === event.track.kind);
+      existing.forEach((t) => stream!.removeTrack(t));
+      stream.addTrack(event.track);
+
+      // Also grab tracks from event stream if provided
+      if (event.streams && event.streams[0]) {
+        event.streams[0].getTracks().forEach((t) => {
+          if (!stream!.getTracks().some((st) => st.id === t.id)) {
+            stream!.addTrack(t);
+          }
+        });
+      }
+
       const cb = this.onRemoteStreamCallbacks.get(peerId);
-      if (cb) cb(stream);
+      if (cb) cb(new MediaStream(stream.getTracks()));
     };
 
     pc.oniceconnectionstatechange = () => {
@@ -146,6 +170,7 @@ export class WebRTCManager {
 
     try {
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      await this.flushPendingCandidates(senderId);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       socket.emit('signal-answer', { targetId: senderId, answer });
@@ -159,6 +184,7 @@ export class WebRTCManager {
     if (pc && pc.signalingState !== 'stable') {
       try {
         await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        await this.flushPendingCandidates(senderId);
       } catch (err) {
         console.error(`[WebRTC] Error setting remote answer from ${senderId}:`, err);
       }
@@ -167,12 +193,33 @@ export class WebRTCManager {
 
   public async handleIceCandidate(senderId: string, candidate: RTCIceCandidateInit) {
     const pc = this.peerConnections.get(senderId);
-    if (pc && pc.remoteDescription) {
+    if (pc && pc.remoteDescription && pc.remoteDescription.type) {
       try {
         await pc.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (err) {
         console.error(`[WebRTC] Error adding ICE candidate from ${senderId}:`, err);
       }
+    } else {
+      console.log(`[WebRTC] Queueing ICE candidate for ${senderId} until remote description set`);
+      const queue = this.pendingCandidates.get(senderId) || [];
+      queue.push(candidate);
+      this.pendingCandidates.set(senderId, queue);
+    }
+  }
+
+  private async flushPendingCandidates(peerId: string) {
+    const pc = this.peerConnections.get(peerId);
+    const queue = this.pendingCandidates.get(peerId);
+    if (pc && queue && queue.length > 0) {
+      console.log(`[WebRTC] Flushing ${queue.length} pending ICE candidates for ${peerId}`);
+      for (const cand of queue) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(cand));
+        } catch (e) {
+          console.warn(`[WebRTC] Error applying flushed candidate:`, e);
+        }
+      }
+      this.pendingCandidates.delete(peerId);
     }
   }
 

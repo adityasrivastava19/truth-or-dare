@@ -267,23 +267,27 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .video-grid-wrapper {
-  flex: 1;
-  max-height: 250px;
+  flex: 2;
+  min-height: 48vh;
+  max-height: 65vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
   .video-grid-wrapper {
     max-height: none;
     height: auto;
+    min-height: 280px;
     flex: none;
   }
 }
 
 .game-stage-wrapper {
-  flex: 1.4;
+  flex: 1;
   overflow-y: auto;
-  min-height: 350px;
+  min-height: 220px;
 }
 
 @media (max-width: 768px) {
@@ -301,8 +305,8 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 @media (max-width: 768px) {
   .sidebar-container {
-    height: 480px;
-    min-height: 420px;
+    height: 440px;
+    min-height: 380px;
   }
 }
 

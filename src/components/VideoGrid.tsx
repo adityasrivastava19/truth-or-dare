@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Mic, MicOff, Video, VideoOff, Crown, Award, Flame } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Mic, MicOff, Video, VideoOff, Crown, Award, Flame, Maximize2, Minimize2 } from 'lucide-react';
 import { Player, FloatingReaction } from '../types/game';
 
 interface VideoGridProps {
@@ -30,8 +30,8 @@ export const VideoGrid: React.FC<VideoGridProps> = ({
             ? '1fr'
             : allPlayers.length === 2
             ? '1fr 1fr'
-            : 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: '1rem',
+            : 'repeat(auto-fit, minmax(240px, 1fr))',
+        gap: '0.75rem',
         width: '100%',
         height: '100%',
         alignContent: 'center'
@@ -68,10 +68,13 @@ interface VideoCardProps {
 
 const VideoCard: React.FC<VideoCardProps> = ({ player, stream, isLocal, isCurrentTurn, reactions }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [fitMode, setFitMode] = useState<'contain' | 'cover'>('contain');
 
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
+    const v = videoRef.current;
+    if (v && stream) {
+      v.srcObject = stream;
+      v.play().catch((err) => console.warn('[VideoCard] Autoplay playback warning:', err));
     }
   }, [stream]);
 
@@ -84,6 +87,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ player, stream, isLocal, isCurren
       style={{
         position: 'relative',
         width: '100%',
+        height: '100%',
+        maxHeight: '100%',
         aspectRatio: '16/9',
         borderRadius: '1rem',
         overflow: 'hidden',
@@ -104,7 +109,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ player, stream, isLocal, isCurren
           style={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
+            objectFit: fitMode,
             transform: isLocal ? 'scaleX(-1)' : 'none'
           }}
         />
@@ -187,6 +192,34 @@ const VideoCard: React.FC<VideoCardProps> = ({ player, stream, isLocal, isCurren
           </span>
         )}
       </div>
+
+      {/* Top Right Fit Mode Overlay Button */}
+      <button
+        onClick={() => setFitMode((prev) => (prev === 'contain' ? 'cover' : 'contain'))}
+        style={{
+          position: 'absolute',
+          top: '0.65rem',
+          right: '0.65rem',
+          background: 'rgba(0, 0, 0, 0.65)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          color: '#ffffff',
+          borderRadius: '0.4rem',
+          padding: '0.2rem 0.5rem',
+          fontSize: '0.72rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          zIndex: 12,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          transition: 'all 0.2s'
+        }}
+        title="Toggle Full Face View"
+      >
+        {fitMode === 'contain' ? <Maximize2 size={11} /> : <Minimize2 size={11} />}
+        {fitMode === 'contain' ? 'Full Face' : 'Fill'}
+      </button>
 
       {/* Bottom Bar Player Info */}
       <div
