@@ -11,6 +11,8 @@ interface WheelSpinnerProps {
   onSpinEnd?: () => void;
 }
 
+const BASE_SIZE = 420; // logical CSS size in px
+
 export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
   players,
   targetPlayerId,
@@ -26,6 +28,17 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // ── HiDPI / Retina fix ────────────────────────────────────────────────────
+    const dpr = Math.min(window.devicePixelRatio || 1, 3); // cap at 3× to avoid OOM
+    const SIZE = BASE_SIZE * dpr;
+    canvas.width  = SIZE;
+    canvas.height = SIZE;
+    // Keep CSS display size unchanged so layout is unaffected
+    canvas.style.width  = `${BASE_SIZE}px`;
+    canvas.style.height = `${BASE_SIZE}px`;
+    ctx.scale(dpr, dpr); // all drawing coordinates stay in logical px
+    // ─────────────────────────────────────────────────────────────────────────
 
     const numSegments = Math.max(1, players.length);
     const segmentAngle = (2 * Math.PI) / numSegments;
@@ -46,23 +59,25 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     };
 
     const drawWheel = (angleOffset: number) => {
-      const W = canvas.width;
-      const H = canvas.height;
-      const radius = W / 2 - 18;
+      // All coordinates are in logical (CSS) px — ctx.scale(dpr,dpr) handles the rest
+      const W = BASE_SIZE;
+      const H = BASE_SIZE;
+      const radius = W / 2 - 22;
       const cx = W / 2;
       const cy = H / 2;
 
       ctx.clearRect(0, 0, W, H);
 
-      // Background glow halo
-      const halo = ctx.createRadialGradient(cx, cy, radius - 6, cx, cy, radius + 18);
-      halo.addColorStop(0, 'rgba(236,72,153,0.3)');
+      // ── Outer glow halo ──
+      const halo = ctx.createRadialGradient(cx, cy, radius - 8, cx, cy, radius + 24);
+      halo.addColorStop(0, 'rgba(236,72,153,0.35)');
       halo.addColorStop(1, 'rgba(139,92,246,0)');
       ctx.beginPath();
-      ctx.arc(cx, cy, radius + 16, 0, 2 * Math.PI);
+      ctx.arc(cx, cy, radius + 22, 0, 2 * Math.PI);
       ctx.fillStyle = halo;
       ctx.fill();
 
+      // ── Segments ──
       players.forEach((player, idx) => {
         const type: 'truth' | 'dare' = segmentTypes[idx] ?? (idx % 2 === 0 ? 'truth' : 'dare');
         const startAngle = angleOffset + idx * segmentAngle;
@@ -70,11 +85,11 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
         const midAngle   = startAngle + segmentAngle / 2;
         const baseColor  = getSegColor(idx, type);
 
-        // Gradient fill per segment
-        const gx1 = cx + Math.cos(midAngle) * radius * 0.25;
-        const gy1 = cy + Math.sin(midAngle) * radius * 0.25;
+        // Radial gradient fill
+        const gx1 = cx + Math.cos(midAngle) * radius * 0.28;
+        const gy1 = cy + Math.sin(midAngle) * radius * 0.28;
         const grad = ctx.createRadialGradient(gx1, gy1, 0, cx, cy, radius);
-        grad.addColorStop(0, lighten(baseColor, 45));
+        grad.addColorStop(0, lighten(baseColor, 55));
         grad.addColorStop(1, baseColor);
 
         ctx.beginPath();
@@ -83,69 +98,83 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
         ctx.closePath();
         ctx.fillStyle = grad;
         ctx.fill();
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+
+        // Crisp segment border
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
         ctx.stroke();
 
-        // Labels
+        // ── Text labels ──
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(midAngle);
         ctx.textAlign = 'right';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-        ctx.shadowBlur = 5;
 
-        // Player name line
+        // Text shadow for legibility
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur  = 6;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Player name
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 13px Outfit, sans-serif';
-        ctx.fillText(`${player.avatar} ${player.name}`, radius - 10, -6);
+        ctx.font = 'bold 15px Outfit, sans-serif';
+        ctx.fillText(`${player.avatar} ${player.name}`, radius - 14, -7);
 
-        // Truth/Dare badge line
+        // Truth / Dare badge
         ctx.fillStyle = type === 'truth' ? '#67e8f9' : '#fda4af';
-        ctx.font = 'bold 10px Outfit, sans-serif';
-        ctx.fillText(type === 'truth' ? '🧊 TRUTH' : '🔥 DARE', radius - 10, 9);
+        ctx.font = 'bold 12px Outfit, sans-serif';
+        ctx.fillText(type === 'truth' ? '🧊 TRUTH' : '🔥 DARE', radius - 14, 11);
 
         ctx.shadowBlur = 0;
         ctx.restore();
       });
 
-      // Outer ring highlight
+      // ── Outer ring chrome ──
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
       ctx.stroke();
 
-      // Center hub gradient
-      const hubGrad = ctx.createRadialGradient(cx - 4, cy - 4, 0, cx, cy, 28);
+      // Inner ring shadow
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius - 3, 0, 2 * Math.PI);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.stroke();
+
+      // ── Center hub ──
+      const hubGrad = ctx.createRadialGradient(cx - 5, cy - 5, 0, cx, cy, 34);
       hubGrad.addColorStop(0, '#ffffff');
       hubGrad.addColorStop(1, '#d1d5db');
       ctx.beginPath();
-      ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+      ctx.arc(cx, cy, 34, 0, 2 * Math.PI);
       ctx.fillStyle = hubGrad;
       ctx.fill();
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 5;
       ctx.strokeStyle = '#ec4899';
       ctx.stroke();
 
-      // Hub emoji
-      ctx.font = '14px sans-serif';
+      // Hub icon
+      ctx.font = '18px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#ec4899';
-      ctx.fillText('🎡', cx, cy + 5);
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🎡', cx, cy);
+      ctx.textBaseline = 'alphabetic';
 
-      // Pointer arrow (top center, pointing down into wheel)
+      // ── Pointer arrow (top, points into wheel) ──
       ctx.beginPath();
-      ctx.moveTo(cx - 14, 4);
-      ctx.lineTo(cx + 14, 4);
-      ctx.lineTo(cx, 32);
+      ctx.moveTo(cx - 16, 5);
+      ctx.lineTo(cx + 16, 5);
+      ctx.lineTo(cx, 36);
       ctx.closePath();
-      const arrowGrad = ctx.createLinearGradient(cx, 4, cx, 32);
+      const arrowGrad = ctx.createLinearGradient(cx, 5, cx, 36);
       arrowGrad.addColorStop(0, '#fb7185');
       arrowGrad.addColorStop(1, '#be123c');
       ctx.fillStyle = arrowGrad;
       ctx.fill();
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
     };
@@ -201,13 +230,17 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
   }, [players, isSpinning, targetPlayerId, segmentTypes]);
 
   return (
-    <div style={{ textAlign: 'center', position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '1/1', margin: '0 auto' }}>
+    <div style={{ textAlign: 'center', position: 'relative', width: '100%', maxWidth: `${BASE_SIZE}px`, aspectRatio: '1/1', margin: '0 auto' }}>
       <canvas
         ref={canvasRef}
-        width={300}
-        height={300}
-        style={{ borderRadius: '50%', width: '100%', height: '100%', filter: 'drop-shadow(0 0 22px rgba(236,72,153,0.5))' }}
+        style={{
+          borderRadius: '50%',
+          width: `${BASE_SIZE}px`,
+          height: `${BASE_SIZE}px`,
+          filter: 'drop-shadow(0 0 28px rgba(236,72,153,0.55)) drop-shadow(0 0 8px rgba(139,92,246,0.4))'
+        }}
       />
     </div>
   );
 };
+
