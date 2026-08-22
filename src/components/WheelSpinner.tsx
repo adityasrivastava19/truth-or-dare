@@ -6,13 +6,16 @@ interface WheelSpinnerProps {
   players: Player[];
   targetPlayerId: string | null;
   isSpinning: boolean;
+  /** Parallel array to `players` — each entry is the truth/dare assigned to that segment */
+  segmentTypes?: ('truth' | 'dare')[];
   onSpinEnd?: () => void;
 }
 
 export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
   players,
   targetPlayerId,
-  isSpinning
+  isSpinning,
+  segmentTypes = []
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef<number>(0);
@@ -26,70 +29,121 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
 
     const numSegments = Math.max(1, players.length);
     const segmentAngle = (2 * Math.PI) / numSegments;
-    const colors = [
-      '#ec4899', '#8b5cf6', '#06b6d4', '#f59e0b',
-      '#10b981', '#ef4444', '#3b82f6', '#84cc16'
-    ];
+
+    // Color palette: truth = teal/blue, dare = pink/red
+    const truthColors = ['#0e7490', '#0f766e', '#1e40af', '#6d28d9'];
+    const dareColors  = ['#be185d', '#9d174d', '#c2410c', '#b91c1c'];
+
+    const getSegColor = (idx: number, type: 'truth' | 'dare') =>
+      type === 'truth' ? truthColors[idx % truthColors.length] : dareColors[idx % dareColors.length];
+
+    const lighten = (hex: string, amt: number) => {
+      const n = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, (n >> 16) + amt);
+      const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+      const b = Math.min(255, (n & 0xff) + amt);
+      return `rgb(${r},${g},${b})`;
+    };
 
     const drawWheel = (angleOffset: number) => {
-      const width = canvas.width;
-      const height = canvas.height;
-      const radius = width / 2 - 15;
-      const centerX = width / 2;
-      const centerY = height / 2;
+      const W = canvas.width;
+      const H = canvas.height;
+      const radius = W / 2 - 18;
+      const cx = W / 2;
+      const cy = H / 2;
 
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, W, H);
 
-      // Draw Segments
+      // Background glow halo
+      const halo = ctx.createRadialGradient(cx, cy, radius - 6, cx, cy, radius + 18);
+      halo.addColorStop(0, 'rgba(236,72,153,0.3)');
+      halo.addColorStop(1, 'rgba(139,92,246,0)');
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + 16, 0, 2 * Math.PI);
+      ctx.fillStyle = halo;
+      ctx.fill();
+
       players.forEach((player, idx) => {
+        const type: 'truth' | 'dare' = segmentTypes[idx] ?? (idx % 2 === 0 ? 'truth' : 'dare');
         const startAngle = angleOffset + idx * segmentAngle;
-        const endAngle = startAngle + segmentAngle;
+        const endAngle   = startAngle + segmentAngle;
+        const midAngle   = startAngle + segmentAngle / 2;
+        const baseColor  = getSegColor(idx, type);
+
+        // Gradient fill per segment
+        const gx1 = cx + Math.cos(midAngle) * radius * 0.25;
+        const gy1 = cy + Math.sin(midAngle) * radius * 0.25;
+        const grad = ctx.createRadialGradient(gx1, gy1, 0, cx, cy, radius);
+        grad.addColorStop(0, lighten(baseColor, 45));
+        grad.addColorStop(1, baseColor);
 
         ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
         ctx.closePath();
-
-        ctx.fillStyle = colors[idx % colors.length];
+        ctx.fillStyle = grad;
         ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#090b14';
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
         ctx.stroke();
 
-        // Draw Player Name & Avatar
+        // Labels
         ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(startAngle + segmentAngle / 2);
+        ctx.translate(cx, cy);
+        ctx.rotate(midAngle);
         ctx.textAlign = 'right';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 5;
+
+        // Player name line
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 15px Outfit, sans-serif';
-        ctx.fillText(`${player.avatar} ${player.name}`, radius - 20, 5);
+        ctx.font = 'bold 13px Outfit, sans-serif';
+        ctx.fillText(`${player.avatar} ${player.name}`, radius - 10, -6);
+
+        // Truth/Dare badge line
+        ctx.fillStyle = type === 'truth' ? '#67e8f9' : '#fda4af';
+        ctx.font = 'bold 10px Outfit, sans-serif';
+        ctx.fillText(type === 'truth' ? '🧊 TRUTH' : '🔥 DARE', radius - 10, 9);
+
+        ctx.shadowBlur = 0;
         ctx.restore();
       });
 
-      // Draw Outer Glow Circle
+      // Outer ring highlight
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.stroke();
 
-      // Draw Center Pin / Hub
+      // Center hub gradient
+      const hubGrad = ctx.createRadialGradient(cx - 4, cy - 4, 0, cx, cy, 28);
+      hubGrad.addColorStop(0, '#ffffff');
+      hubGrad.addColorStop(1, '#d1d5db');
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 24, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffffff';
+      ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+      ctx.fillStyle = hubGrad;
       ctx.fill();
       ctx.lineWidth = 4;
       ctx.strokeStyle = '#ec4899';
       ctx.stroke();
 
-      // Pointer Arrow at top
+      // Hub emoji
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ec4899';
+      ctx.fillText('🎡', cx, cy + 5);
+
+      // Pointer arrow (top center, pointing down into wheel)
       ctx.beginPath();
-      ctx.moveTo(centerX - 14, 5);
-      ctx.lineTo(centerX + 14, 5);
-      ctx.lineTo(centerX, 28);
+      ctx.moveTo(cx - 14, 4);
+      ctx.lineTo(cx + 14, 4);
+      ctx.lineTo(cx, 32);
       ctx.closePath();
-      ctx.fillStyle = '#f43f5e';
+      const arrowGrad = ctx.createLinearGradient(cx, 4, cx, 32);
+      arrowGrad.addColorStop(0, '#fb7185');
+      arrowGrad.addColorStop(1, '#be123c');
+      ctx.fillStyle = arrowGrad;
       ctx.fill();
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#ffffff';
@@ -103,12 +157,10 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
       const targetIndex = players.findIndex((p) => p.id === targetPlayerId);
       const idx = targetIndex >= 0 ? targetIndex : 0;
 
-      // Calculate angle so target lands under pointer (top 270 deg / -90 deg)
-      const targetSegmentAngle = idx * segmentAngle + segmentAngle / 2;
-      const finalAngle = 1.5 * Math.PI - targetSegmentAngle;
-      
-      // Add 5 to 7 full rotations for excitement!
-      const totalSpin = 6 * (2 * Math.PI) + (finalAngle % (2 * Math.PI));
+      const targetSegmentMid = idx * segmentAngle + segmentAngle / 2;
+      const finalAngle = 1.5 * Math.PI - targetSegmentMid;
+      const normDelta = ((finalAngle - rotationRef.current) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      const totalSpin = 6 * 2 * Math.PI + normDelta;
       const initialRotation = rotationRef.current;
       targetRotation = initialRotation + totalSpin;
 
@@ -116,17 +168,15 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
 
       const animate = (timestamp: number) => {
         if (!startTimestamp) startTimestamp = timestamp;
-        const elapsed = timestamp - startTimestamp;
-        const duration = 3200; // 3.2 seconds duration
+        const elapsed  = timestamp - startTimestamp;
+        const duration = 3200;
 
         if (elapsed < duration) {
-          // Quintic ease-out formula for ultra-smooth deceleration physics
           const progress = elapsed / duration;
-          const easeOut = 1 - Math.pow(1 - progress, 4);
+          const easeOut  = 1 - Math.pow(1 - progress, 5);
           const currentRot = initialRotation + (targetRotation - initialRotation) * easeOut;
           rotationRef.current = currentRot;
 
-          // Sound tick whenever passing segment boundary
           if (Math.abs(currentRot - lastTickAngle) >= segmentAngle / 2) {
             sounds.playTick();
             lastTickAngle = currentRot;
@@ -148,11 +198,16 @@ export const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [players, isSpinning, targetPlayerId]);
+  }, [players, isSpinning, targetPlayerId, segmentTypes]);
 
   return (
-    <div style={{ textAlign: 'center', position: 'relative', width: '100%', maxWidth: '280px', aspectRatio: '1/1', margin: '0 auto' }}>
-      <canvas ref={canvasRef} width={280} height={280} style={{ borderRadius: '50%', width: '100%', height: '100%' }} />
+    <div style={{ textAlign: 'center', position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '1/1', margin: '0 auto' }}>
+      <canvas
+        ref={canvasRef}
+        width={300}
+        height={300}
+        style={{ borderRadius: '50%', width: '100%', height: '100%', filter: 'drop-shadow(0 0 22px rgba(236,72,153,0.5))' }}
+      />
     </div>
   );
 };

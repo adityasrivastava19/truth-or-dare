@@ -78,6 +78,8 @@ export interface Room {
   lastGenderTurn?: 'male' | 'female' | 'neutral';
   activeCategory: 'all' | 'classic' | 'party' | 'deep' | 'spicy' | 'couples' | 'icebreaker';
   currentTurnPlayerId: string | null;
+  // wheelSegmentTypes: parallel array to players — each slot is the truth/dare assigned to that player segment
+  wheelSegmentTypes: ('truth' | 'dare')[];
   gameState: 'idle' | 'spinning' | 'choosing' | 'answering' | 'verdict' | 'verifying';
   currentQuestion: {
     id?: string;
@@ -226,6 +228,7 @@ function checkMatchmaking() {
         turnMode: 'staggered',
         activeCategory: initialCategory,
         currentTurnPlayerId: null,
+        wheelSegmentTypes: ['truth', 'dare'],
         gameState: 'idle',
         currentQuestion: null,
         questionTimer: 60,
@@ -286,6 +289,7 @@ io.on('connection', (socket: Socket) => {
       turnMode: turnMode || 'staggered',
       activeCategory: category || 'all',
       currentTurnPlayerId: null,
+      wheelSegmentTypes: ['truth'],
       gameState: 'idle',
       currentQuestion: null,
       questionTimer: 60,
@@ -378,7 +382,7 @@ io.on('connection', (socket: Socket) => {
     io.to(code).emit('room-updated', room);
   });
 
-  // Spin Wheel to select next player
+  // Spin Wheel to select next player AND truth/dare — goes directly to answering
   socket.on('spin-wheel', ({ code }) => {
     const room = rooms.get(code);
     if (!room || room.players.length === 0) return;
@@ -395,22 +399,62 @@ io.on('connection', (socket: Socket) => {
 
     if (!targetPlayer) return;
 
+    // Build segment types: randomly assign truth or dare to each player segment
+    const segmentTypes: ('truth' | 'dare')[] = room.players.map(() =>
+      Math.random() < 0.5 ? 'truth' : 'dare'
+    );
+
+    // Force the chosen player's segment to also be randomly truth/dare
+    const targetIndex = room.players.findIndex((p) => p.id === targetPlayer!.id);
+    const chosenType: 'truth' | 'dare' = segmentTypes[targetIndex] ?? (Math.random() < 0.5 ? 'truth' : 'dare');
+
     room.currentTurnPlayerId = targetPlayer.id;
+    room.wheelSegmentTypes = segmentTypes;
     room.gameState = 'spinning';
     room.currentQuestion = null;
 
-    io.to(code).emit('wheel-spinning', {
-      targetPlayerId: targetPlayer.id,
-      targetPlayerName: targetPlayer.name
-    });
+    io.to(code).emit('room-updated', room);
 
-    // After spin animation delay (3.5 seconds), update room state to 'choosing'
+    // After spin animation (3.5 s) → auto-select question and jump to answering
     setTimeout(() => {
-      if (rooms.has(code)) {
-        const currentRoom = rooms.get(code)!;
-        currentRoom.gameState = 'choosing';
-        io.to(code).emit('room-updated', currentRoom);
+      if (!rooms.has(code)) return;
+      const currentRoom = rooms.get(code)!;
+
+      // Draw a question of the wheel-decided type
+      let selectedPrompt: { id?: string; type: 'truth' | 'dare'; text: string; category: string; intensity: string } | null = null;
+
+      const availableCustom = currentRoom.customPrompts.filter((cp) => cp.type === chosenType);
+      if (availableCustom.length > 0 && Math.random() < 0.35) {
+        const cp = availableCustom[Math.floor(Math.random() * availableCustom.length)];
+        selectedPrompt = {
+          type: cp.type,
+          text: `${cp.text} (Submitted by ${cp.author})`,
+          category: 'custom',
+          intensity: 'wild'
+        };
+        currentRoom.customPrompts = currentRoom.customPrompts.filter((p) => p.id !== cp.id);
+      } else {
+        const q = getRandomQuestion(chosenType, currentRoom.activeCategory, currentRoom.usedQuestionIds);
+        currentRoom.usedQuestionIds.push(q.id);
+        selectedPrompt = {
+          id: q.id,
+          type: q.type,
+          text: q.text,
+          category: q.category,
+          intensity: q.intensity
+        };
       }
+
+      currentRoom.currentQuestion = selectedPrompt;
+      currentRoom.gameState = 'answering';
+
+      io.to(code).emit('card-revealed', {
+        question: selectedPrompt,
+        turnPlayerId: currentRoom.currentTurnPlayerId,
+        timerSeconds: currentRoom.questionTimer
+      });
+
+      io.to(code).emit('room-updated', currentRoom);
     }, 3500);
   });
 

@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { WheelSpinner } from './WheelSpinner';
 import { CardViewer } from './CardViewer';
 import { RoomState, Player } from '../types/game';
-import { Play, Sparkles, HelpCircle, Flame, RefreshCw, Dice5, ChevronDown, ChevronUp, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, Dice5 } from 'lucide-react';
 
 interface GameStageProps {
   room: RoomState;
   localPlayer: Player;
   onSpin: () => void;
-  onSelectChoice: (choice: 'truth' | 'dare') => void;
   onVerdict: (verdict: 'completed' | 'forfeited') => void;
   onVerifyDare?: (accepted: boolean) => void;
   onReroll: () => void;
@@ -18,7 +17,6 @@ export const GameStage: React.FC<GameStageProps> = ({
   room,
   localPlayer,
   onSpin,
-  onSelectChoice,
   onVerdict,
   onVerifyDare,
   onReroll
@@ -27,9 +25,9 @@ export const GameStage: React.FC<GameStageProps> = ({
   const turnPlayer = room.players.find((p) => p.id === room.currentTurnPlayerId);
   const isLocalTurn = room.currentTurnPlayerId === localPlayer.id;
 
-  // Auto-expand game stage when a new question or selection begins
+  // Auto-expand game stage when answering begins
   useEffect(() => {
-    if (room.gameState === 'answering' || room.gameState === 'choosing' || room.gameState === 'spinning') {
+    if (room.gameState === 'answering' || room.gameState === 'spinning') {
       setIsMinimized(false);
     }
   }, [room.gameState, room.currentQuestion]);
@@ -47,8 +45,6 @@ export const GameStage: React.FC<GameStageProps> = ({
             ? '🎲 Open Game Stage'
             : room.gameState === 'spinning'
             ? '🌀 Wheel Spinning...'
-            : room.gameState === 'choosing'
-            ? '🎯 Choose Truth / Dare'
             : `🔥 ${room.currentQuestion?.type.toUpperCase() || 'Card'} Active`}
         </span>
         <ChevronUp size={18} className="text-pink-400" />
@@ -144,54 +140,18 @@ export const GameStage: React.FC<GameStageProps> = ({
             players={room.players}
             targetPlayerId={room.currentTurnPlayerId}
             isSpinning={true}
+            segmentTypes={room.wheelSegmentTypes}
           />
-          <p className="font-heading mt-4 text-lg font-black text-pink-600 dark:text-pink-400">
-            Spinning Wheel... Who is next?
+          <p className="font-heading mt-4 text-lg font-black text-pink-600 dark:text-pink-400 animate-pulse">
+            🎡 Spinning... Who gets it?
+          </p>
+          <p className="text-slate-400 text-xs mt-1">
+            The wheel decides the player AND Truth or Dare!
           </p>
         </div>
       )}
 
-      {/* State: CHOOSING */}
-      {room.gameState === 'choosing' && (
-        <div className="text-center my-4 w-full max-w-md">
-          <div className="text-3xl mb-2">🎯</div>
-          <h3 className="font-heading text-lg font-black text-slate-900 dark:text-slate-100 mb-1">
-            {turnPlayer?.avatar} {turnPlayer?.name} Landed on the Wheel!
-          </h3>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mb-6">
-            {isLocalTurn ? 'It is your turn! Make your choice:' : `Waiting for ${turnPlayer?.name} to choose...`}
-          </p>
 
-          {isLocalTurn ? (
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => onSelectChoice('truth')}
-                className="glass-button btn-cyan-gradient !py-4 text-lg font-black"
-              >
-                <HelpCircle size={22} /> TRUTH
-              </button>
-              <button
-                onClick={() => onSelectChoice('dare')}
-                className="glass-button btn-primary-gradient !py-4 text-lg font-black"
-              >
-                <Flame size={22} /> DARE
-              </button>
-              <button
-                onClick={() => onSelectChoice(Math.random() > 0.5 ? 'truth' : 'dare')}
-                className="glass-button btn-gold-gradient col-span-2 !py-2.5 text-xs font-bold"
-              >
-                <Dice5 size={18} /> Surprise Me (Random)
-              </button>
-            </div>
-          ) : (
-            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-              <div className="font-heading text-sm font-bold text-pink-600 dark:text-pink-400">
-                ⏳ Player is picking Truth or Dare...
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* State: ANSWERING / VERDICT / VERIFYING */}
       {(room.gameState === 'answering' || room.gameState === 'verdict' || room.gameState === 'verifying') && room.currentQuestion && (

@@ -41,6 +41,8 @@ export interface RoomState {
   lastGenderTurn?: GenderType;
   activeCategory: GameCategory;
   currentTurnPlayerId: string | null;
+  /** Parallel array to `players` — each index holds the truth/dare assigned to that player's wheel segment */
+  wheelSegmentTypes: ('truth' | 'dare')[];
   gameState: GameState;
   currentQuestion: CurrentQuestion | null;
   questionTimer: number;

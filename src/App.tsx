@@ -452,7 +452,6 @@ export const App: React.FC = () => {
                   room={room}
                   localPlayer={localPlayer}
                   onSpin={handleSpinWheel}
-                  onSelectChoice={handleSelectChoice}
                   onVerdict={handleVerdict}
                   onVerifyDare={handleVerifyDare}
                   onReroll={handleReroll}
